@@ -1,70 +1,52 @@
-# Getting Started with Create React App
+# ТЗ на компонент для выбора регионов
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Примеры
 
-## Available Scripts
 
-In the project directory, you can run:
+Компонентов с такой функциональностью я не видел (логично, иначе бы
+такой задачи не возникло). Самое близкое, что я нашел:
+* https://github.com/DominicTobias/react-image-crop#readme 
+* https://fengyuanchen.github.io/cropperjs/
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Задача
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Разработать компонент для выбора/изменения нескольких прямоугольных регионов в области.
 
-### `npm test`
+Необходимая фунциональность:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+* создать новый регион:
+  * левая кнопка нажимается за пределами существующего региона
+  * мышь передвигается. при этом пунктиром рисуется прямоугольник,
+    соответствующий будущим границам. Если указатель выходит за пределы
+    компонента, регион ограничивается границами компонента (регион не может
+    быть больше изначально заданного размера)
+  * если пользователь не отпуская левую кнопку нажимает правую
+    или escape, операция отменяется
+  * когда пользователь отпускет левую кнопку, создается регион с углами в начальной 
+    и конечной точке
+* переместить регион: 
+  * левая кнопка нажимается внутри существующего региона
+  * мышь передвигается. при этом регион следует за мышью. Регион не может покинуть 
+  границ компонента.
+  * если в этот момент нажимается правая кнопка, операция отменяется.
+  * левая кнопка отпускается. Регион окончательно передвиагется в новое место.
+* изменить размер
+  * левая кнопка нажимается в пределах "квадратиков" в углах региона или на серединах
+    его сторон
+  * мышь передвигаетя, при этом меняется размер региона. Регион не может выйти за пределы
+    компонента
+  * если нажимается правая кнопка, операция отменяется
+  * левая кнопка отпускается. Размер региона окончательно меняется
+* удалить регион -- нажатие правой кнопки в пределах региона.
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Пример вызова
+```jsx
+<RegionSelector 
+    width="100"
+    height="100"  
+    regions=[{x:10, y:10, width: 20, height:20}, {x:50, y:50, width: 30, height:25}]
+    onRegionChange=onRegionChange
+/>
+```
