@@ -74,21 +74,32 @@ class Crop extends Component {
       onChange,
       onComplete,
     } = this.props
+    const prevCoordinate = coordinate
+    const prevCoordinates = coordinates
     const { width, height } = e.rect
     const { left, top } = e.deltaRect
-
     const nextCoordinate = {
       ...coordinate, x: x + left, y: y + top, width, height,
     }
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
     if (is(Function, onResize)) {
-      onResize(nextCoordinate, index, nextCoordinates)
+      console.log({Res:e});
+      if (e.buttons !== 2) {
+        onResize(nextCoordinate, index, nextCoordinates)
+      }
     }
-    if (is(Function, onChange)) {
-      onChange(nextCoordinate, index, nextCoordinates)
+    if (is(Function, onChange) && e.buttons !== 2) {
+      console.log({Cha:e});
+      if (e.buttons !== 2) {
+        onChange(nextCoordinate, index, nextCoordinates)
+      }
     }
-    if (is(Function, onComplete)) {
+    if (is(Function, onComplete) && e.buttons !== 2) {
+      console.log({Com: window});
       onComplete(nextCoordinate, index, nextCoordinates)
+      if (e.buttons !== 2) {
+        onComplete(prevCoordinate, index, prevCoordinates)
+      }
     }
   }
   handleDragMove = (e) => {
@@ -131,10 +142,12 @@ class Crop extends Component {
   }
 
   onContextMenu = (event) => {
-    // console.log(event);
+    console.log(event);
     event.preventDefault();
     event.stopPropagation(); 
-    this.handleDelete();
+    if (event.buttons !== 1) {
+      this.handleDelete()
+    }
     return false;
   }
 

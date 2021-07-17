@@ -36,23 +36,20 @@ const RegionSelector = (props) => {
 
   const onChange = useCallback((crop, index, crops) => {
     setCrops(crops);
-    console.log(crop);
   }, []);
 
   const onDelete = useCallback((crop, index, crops) => {
     setCrops(crops);
-    console.log(crop);
     setCompletedCrops(crops);
   }, []);
 
   const onComplete = useCallback((crop, index, crops) => {
-    console.log(crop);
     setCompletedCrops(crops);
   }, []);
 
-  useEffect(() => {
-    console.log({QQQ: completedCrops});
-  }, [completedCrops])
+  // useEffect(() => {
+    
+  // }, [completedCrops])
 
     return (
       <div style={regionSelectorStyle}>

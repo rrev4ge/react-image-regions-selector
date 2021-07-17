@@ -26,7 +26,9 @@ function generateDownload(canvas, crop) {
   );
 }
 
-const useCanvas = (img, callback) => {
+const useCanvas = (props, callback) => {
+    const {crop, img} = props;
+
     const canvasRef = useRef(null);
     const imgRef = useRef(null);
     imgRef.current = img;
@@ -36,14 +38,15 @@ const useCanvas = (img, callback) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         callback([canvas, ctx, image]);
-    }, []);
+    }, [crop]);
 
     return canvasRef;
 }
 
 const Canvas = (props) => {
     const {crop, img} = props;
-    const canvasRef = useCanvas(img, ([canvas, ctx, image]) => {
+
+    const canvasRef = useCanvas(props, ([canvas, ctx, image]) => {
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
     const pixelRatio = window.devicePixelRatio;
