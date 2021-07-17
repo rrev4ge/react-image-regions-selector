@@ -31,6 +31,8 @@ const RegionSelector = (props) => {
   const imgRef = useRef(null);
 
   const onLoad = useCallback((img) => {
+    setCrops([]);
+    setCompletedCrops([]);
     imgRef.current = img.target;
   }, []);
 

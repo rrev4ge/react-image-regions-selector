@@ -48,15 +48,7 @@ class Crop extends Component {
           })
         ],
       })
-      // .actionChecker(function (event, action) {
-      //   console.log(event);
-      //   return event.button === 0 ? action : null;
-      // })
-      // .on('tap', function (event) {
-      //   console.log(event.type, event)
-      // })
-      .on('dragmove', this.handleDragMove)
-      .on('resizemove', this.handleResizeMove)
+      .on(['dragmove', 'dragend', 'resizemove', 'resizeend'], this.handleChange)
   }
   shouldComponentUpdate(nextProps) {
     // reduce uncessary update
@@ -64,66 +56,49 @@ class Crop extends Component {
       || (nextProps.index !== this.props.index)
   }
 
-  handleResizeMove = (e) => {
+  handleChange = (e) => {
     const {
       index,
       coordinate,
       coordinate: { x, y },
       coordinates,
       onResize,
-      onChange,
-      onComplete,
-    } = this.props
-    const prevCoordinate = coordinate
-    const prevCoordinates = coordinates
-    const { width, height } = e.rect
-    const { left, top } = e.deltaRect
-    const nextCoordinate = {
-      ...coordinate, x: x + left, y: y + top, width, height,
-    }
-    const nextCoordinates = update(index, nextCoordinate)(coordinates)
-    if (is(Function, onResize)) {
-      console.log({Res:e});
-      if (e.buttons !== 2) {
-        onResize(nextCoordinate, index, nextCoordinates)
-      }
-    }
-    if (is(Function, onChange) && e.buttons !== 2) {
-      console.log({Cha:e});
-      if (e.buttons !== 2) {
-        onChange(nextCoordinate, index, nextCoordinates)
-      }
-    }
-    if (is(Function, onComplete) && e.buttons !== 2) {
-      console.log({Com: window});
-      onComplete(nextCoordinate, index, nextCoordinates)
-      if (e.buttons !== 2) {
-        onComplete(prevCoordinate, index, prevCoordinates)
-      }
-    }
-  }
-  handleDragMove = (e) => {
-    const {
-      index,
-      coordinate,
-      coordinate: { x, y },
-      coordinates,
       onDrag,
       onChange,
       onComplete,
     } = this.props
+
+    
     const { dx, dy } = e
-    const nextCoordinate = { ...coordinate, x: x + dx, y: y + dy }
+
+    let nextCoordinate = {};
+
+    if (['resizemove', 'resizeend'].includes(e.type)) {
+      const { width, height } = e.rect
+      const { left, top } = e.deltaRect
+      nextCoordinate = {...coordinate, x: x + left, y: y + top, width, height,}
+    }
+
+    if (['dragmove', 'dragend'].includes(e.type)) {
+      nextCoordinate = { ...coordinate, x: x + dx, y: y + dy }
+    }
+
+    // const nextCoordinate = {
+    //   ...coordinate, x: x + left, y: y + top, width, height,
+    // }
+    // const nextCoordinate = { ...coordinate, x: x + dx, y: y + dy }
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
-    if (is(Function, onDrag)) {
+
+    if (is(Function, onResize) && ['resizemove', 'resizeend'].includes(e.type)) {
+        onResize(nextCoordinate, index, nextCoordinates)
+    }
+    if (is(Function, onChange) && ['dragmove', 'dragend', 'resizemove', 'resizeend'].includes(e.type)) {
+        onChange(nextCoordinate, index, nextCoordinates)
+    }
+    if (is(Function, onDrag)  && ['dragmove', 'dragend'].includes(e.type)) {
       onDrag(nextCoordinate, index, nextCoordinates)
     }
-
-    if (is(Function, onChange)) {
-      onChange(nextCoordinate, index, nextCoordinates)
-    }
-
-    if (is(Function, onComplete)) {
+    if (is(Function, onComplete) && ['dragend', 'resizeend'].includes(e.type)) {
       onComplete(nextCoordinate, index, nextCoordinates)
     }
   }

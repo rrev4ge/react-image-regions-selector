@@ -79,13 +79,6 @@ class MultiCrops extends Component {
   }
 
   handleMouseUp = (e) => {
-    // const { onComplete, coordinates } = this.props
-    // this.pointA = {};
-    // const coordinate = coordinates[this.drawingIndex]
-    // const nextCoordinates = clone(coordinates)
-    // if (is(Function, onComplete)) {
-    //     onComplete(coordinate, this.drawingIndex, nextCoordinates)
-    // }
     const { onComplete, coordinates } = this.props
     const { pointA } = this
     if (isValidPoint(pointA)) {
