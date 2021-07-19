@@ -2,7 +2,7 @@
 
 ## [DEMO on GitHub Pages](https://rrev4ge.github.io/region-selector)
 
-## ![demo_screenshot](./public/region_selector_(desktop_demo).png)
+## ![demo_screenshot](./region_selector_(desktop_demo).png)
 
 ## ТЗ на компонент для выбора регионов
 
