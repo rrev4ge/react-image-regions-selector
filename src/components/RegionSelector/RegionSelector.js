@@ -45,25 +45,31 @@ const RegionSelector = (props) => {
     setCompletedCrops(crops);
   }, []);
 
+  const onRestore = useCallback((crop, index, crops) => {
+    setCrops(crops);
+    setCompletedCrops(crops);
+  }, []);
+
 
   return (
     <div 
     style={regionSelectorStyle} 
-    onMouseUp={(e)=>{if (e.button === 0){setCompletedCrops(crops)}}}>
+    onClick={(e)=>{if (e.button === 0){setCompletedCrops(crops)}}}>
       <MultiCrops
         src={src}
         width={'600'}
         coordinates={crops}
         onChange={onChange}
         onDelete={onDelete}
-        onRestore={onDelete}
+        onRestore={onRestore}
         onLoad={onLoad}
         
       />
       <div style={canvasListStyle}>
-        {completedCrops.map( (crop) =>
+        {completedCrops.map( (crop, i) =>
           <Canvas
-            key={crop.id}
+            index={crop.id || i}
+            key={crop.id || i}
             crop={crop}
             img={imgRef.current}
           />

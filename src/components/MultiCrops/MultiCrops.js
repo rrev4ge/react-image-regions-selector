@@ -54,7 +54,6 @@ class MultiCrops extends Component {
   }
 
   handleMouseDown = (e) => {
-    console.log(this);
     const { coordinates } = this.props
     if (e.button === 0) {
 
@@ -111,13 +110,16 @@ class MultiCrops extends Component {
   resetCrop = (e) => {
 
     
-    const { onDraw, onChange } = this.props
+    const { onDraw, onChange, onRestore } = this.props
 
       
-    if (is(Function, onChange)) {
-      onChange(this.coordinate, this.drawingIndex-1, this.prevCoordinates)
+    if (is(Function, onRestore)) {
+      onRestore(this.prevCoordinate, this.drawingIndex-1, this.prevCoordinates)
     }
-    
+    // if (is(Function, onDraw)) {
+    //   onDraw(this.prevCoordinate, this.drawingIndex, this.prevCoordinates)
+    // }
+
     this.pointA = {};
     this.isNewCrop = false;
     this.isLeftBtnTarget = false;
@@ -126,24 +128,25 @@ class MultiCrops extends Component {
 
 
   handleMouseUp = (e) => {
+
+    const { onDraw, onChange } = this.props
+
+    
     this.pointA = {};
     this.isNewCrop = false;
     this.isLeftBtnTarget = false;
     this.isEscBtnTarget = false;
-    console.log(this.isEscBtnTarget );
   }
 
   onKeyDownParent = (e) => {
    if (e.code === "Escape") {
       this.isEscBtnTarget = true;
-      console.log(this.isEscBtnTarget);
     } 
   }
 
   onKeyUpParent = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // this.onMouseUp();
     
   }
 

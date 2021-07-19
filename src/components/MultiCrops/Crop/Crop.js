@@ -134,7 +134,6 @@ class Crop extends Component {
       this.prevCoordinates = [...coordinates]
       this.prevCoordinates = update(index, this.prevCoordinate, coordinates)
     }
-    console.log(this.prevCoordinate);
     
   }
 
@@ -200,7 +199,6 @@ class Crop extends Component {
   onKeyDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log(e);
     if (e.code === "Escape") {
       this.handleRestore();
         this.isLeftBtnActive = false;
