@@ -21,6 +21,8 @@ class MultiCrops extends Component {
 
   id = shortid.generate()
 
+  leftClickActive = false
+
   renderCrops = (props) => {
     const indexedMap = addIndex(map)
     return indexedMap((coor, index) =>
@@ -29,6 +31,7 @@ class MultiCrops extends Component {
         key={coor.id || index}
         index={index}
         coordinate={coor}
+        leftClickActive={this.leftClickActive}
         {...props}
       />))(props.coordinates)
   }
@@ -42,18 +45,24 @@ class MultiCrops extends Component {
   }
 
   handleMouseDown = (e) => {
-    const { coordinates } = this.props
-    if (e.target === this.img || e.target === this.container) {
-      const { x, y } = this.getCursorPosition(e)
 
-      this.drawingIndex = coordinates.length
-      this.pointA = { x, y }
-      this.id = shortid.generate()
+    if (e.button === 0) {
+      const { coordinates } = this.props
+      if (e.target === this.img || e.target === this.container) {
+        const { x, y } = this.getCursorPosition(e)
+
+        this.drawingIndex = coordinates.length
+        this.pointA = { x, y }
+        this.id = shortid.generate()
+        this.leftClickActive = true;
+      }
     }
   }
 
 
   handleMouseMove = (e) => {
+
+    if (e.button === 0) {
     const { onDraw, onChange, coordinates } = this.props
     const { pointA } = this
     if (isValidPoint(pointA)) {
@@ -75,30 +84,19 @@ class MultiCrops extends Component {
       if (is(Function, onChange)) {
         onChange(coordinate, this.drawingIndex, nextCoordinates)
       }
+
+    }
     }
   }
 
-  handleMouseUp = (e) => {
-    const { onComplete, coordinates } = this.props
-    const { pointA } = this
-    if (isValidPoint(pointA)) {
-      const pointB = this.getCursorPosition(e)
 
-      // get the drawing coordinate
-      const coordinate = {
-        x: Math.min(pointA.x, pointB.x),
-        y: Math.min(pointA.y, pointB.y),
-        width: Math.abs(pointA.x - pointB.x),
-        height: Math.abs(pointA.y - pointB.y),
-        id: this.id,
-      }
-      const nextCoordinates = clone(coordinates)
-      nextCoordinates[this.drawingIndex] = coordinate
-      if (is(Function, onComplete)) {
-        onComplete(coordinate, this.drawingIndex, nextCoordinates)
-      }
+  handleMouseUp = (e) => {
+
+    if (e.button === 0) {
+    
+      this.pointA = {};
+      this.leftClickActive = false;
     }
-    this.pointA = {};
   }
 
 
@@ -106,7 +104,6 @@ class MultiCrops extends Component {
     const {
       src, width, height, onLoad,
     } = this.props
-    // const { clicked } = this.state
     return (
       <div
         style={{
@@ -117,6 +114,7 @@ class MultiCrops extends Component {
         onMouseMove={this.handleMouseMove}
         onMouseUp={this.handleMouseUp}
         ref={container => this.container = container}
+        tabIndex="0"
       >
         <img
           ref={img => this.img = img}
@@ -146,6 +144,7 @@ MultiCrops.propTypes = {
   onDraw: func, // eslint-disable-line
   onChange: func, // eslint-disable-line
   onComplete: func, // eslint-disable-line
+  onRestore: func, // eslint-disable-line
   onLoad: func, // eslint-disable-line
 }
 

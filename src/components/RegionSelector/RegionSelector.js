@@ -7,8 +7,8 @@ import MultiCrops from './../MultiCrops/MultiCrops';
 const canvasListStyle = {
   display: 'flex',
   flexFlow: 'row wrap', 
-  alignItems: 'center',
-  justifyAlign: 'center',
+  alignItems: 'start',
+  justifyAlign: 'start',
   justifyContent: 'start',
   width: 'inherit',
   height: '300px',
@@ -45,37 +45,33 @@ const RegionSelector = (props) => {
     setCompletedCrops(crops);
   }, []);
 
-  const onComplete = useCallback((crop, index, crops) => {
-    setCompletedCrops(crops);
-  }, []);
 
-  // useEffect(() => {
-    
-  // }, [completedCrops])
-
-    return (
-      <div style={regionSelectorStyle}>
-        <MultiCrops
-          src={src}
-          width={'600'}
-          coordinates={crops}
-          onChange={onChange}
-          onDelete={onDelete}
-          onComplete={onComplete}
-          onLoad={onLoad}
-        />
-        <div style={canvasListStyle}>
-          {completedCrops.map( (crop) =>
-            <Canvas
-              key={crop.id}
-              crop={crop}
-              img={imgRef.current}
-            />
-            )
-          }
-        </div>
+  return (
+    <div 
+    style={regionSelectorStyle} 
+    onMouseUp={(e)=>{if (e.button === 0){setCompletedCrops(crops)}}}>
+      <MultiCrops
+        src={src}
+        width={'600'}
+        coordinates={crops}
+        onChange={onChange}
+        onDelete={onDelete}
+        onRestore={onDelete}
+        onLoad={onLoad}
+        
+      />
+      <div style={canvasListStyle}>
+        {completedCrops.map( (crop) =>
+          <Canvas
+            key={crop.id}
+            crop={crop}
+            img={imgRef.current}
+          />
+          )
+        }
       </div>
-    );
+    </div>
+  );
 }
 
 export default RegionSelector;
