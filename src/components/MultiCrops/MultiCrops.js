@@ -160,7 +160,11 @@ class MultiCrops extends Component {
         style={{
           display: 'inline-block',
           position: 'relative',
+          msTouchAction: 'none',
+          touchAction: 'none',
+          userSelect: 'none',
         }}
+        
         onMouseDown={this.handleMouseDown}
         onMouseMove={this.handleMouseMove}
         onMouseUp={()=>(!this.isEscBtnTarget ? this.handleMouseUp() : this.resetCrop())}
