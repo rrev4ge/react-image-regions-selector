@@ -37,7 +37,6 @@ class Crop extends Component {
 
   isLeftBtnActive = false;
   isRightBtnActive = false;
-  setAction;
 
   componentDidMount() {
     interact(this.crop)
@@ -63,22 +62,20 @@ class Crop extends Component {
       .actionChecker(this.actionTrigger)
   }
   shouldComponentUpdate(nextProps) {
-    // reduce uncessary update
     return !equals(nextProps.coordinate, this.props.coordinate)
       || (nextProps.index !== this.props.index)
   }
 
   actionTrigger = (pointer, event, action, interactable, element, interaction) => {
     
-    // console.log({pointer, event, action, interactable, element, interaction});
     
     if (event.type === 'pointermove') {
-     this.setAction = action.name;
     }
 
-    // if (event.type === 'pointerdown') {
-    //  this.setAction = action.name || null;
-    // }
+    if (event.type === 'pointerdown') {
+      
+    }
+
 
     return action
   }
@@ -90,6 +87,7 @@ class Crop extends Component {
       coordinate: { x, y },
       coordinates,
       onResize,
+      onRestore,
       onDrag,
       onChange,
     } = this.props
@@ -119,6 +117,7 @@ class Crop extends Component {
       if (is(Function, onDrag)  && e.type === 'dragmove') {
         onDrag(nextCoordinate, index, nextCoordinates)
       }
+      
   }
 
 
@@ -135,6 +134,7 @@ class Crop extends Component {
       this.prevCoordinates = [...coordinates]
       this.prevCoordinates = update(index, this.prevCoordinate, coordinates)
     }
+    console.log(this.prevCoordinate);
     
   }
 
@@ -166,13 +166,11 @@ class Crop extends Component {
     e.preventDefault();
     e.stopPropagation(); 
     if (e.button === 2) {
-      console.log(e.button);
-      console.log(this.isLeftBtnActive);
+
       if (this.isLeftBtnActive === false) {
         this.handleDelete();  
       }
       if (this.isLeftBtnActive === true) {
-        this.handleRestore();
         this.handleRestore();
         this.isLeftBtnActive = false;
       }  
@@ -199,6 +197,21 @@ class Crop extends Component {
     }
   }
 
+  onKeyDown = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log(e);
+    if (e.code === "Escape") {
+      this.handleRestore();
+        this.isLeftBtnActive = false;
+    } 
+  }
+
+  onKeyUp = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
   componentWillUnmount() {
     interact(this.crop)
       .unset()
@@ -206,7 +219,7 @@ class Crop extends Component {
 
   
   render() {
-    const { coordinate, index, onKeyDown } = this.props
+    const { coordinate, index, } = this.props
     return (
       <div
         onMouseDown={this.onMouseDown}
@@ -214,8 +227,9 @@ class Crop extends Component {
         onContextMenu={this.onContextMenu}
         style={Crop.cropStyle(coordinate)}
         ref={crop => this.crop = crop}
-        // onKeyDown={onKeyDown}
-        // tabIndex={index}
+        onKeyDown={this.onKeyDown}
+        onKeyUp={this.onKeyUp}
+        tabIndex='0'
       >
         <NumberIcon number={index + 1} />
         {/* <DeleteIcon
@@ -250,7 +264,6 @@ Crop.propTypes = {
   onComplete: PropTypes.func, // eslint-disable-line
   onRestore: PropTypes.func, // eslint-disable-line
   coordinates: PropTypes.array, // eslint-disable-line
-  leftClickActive: PropTypes.bool // eslint-disable-line
 }
 
 export default Crop

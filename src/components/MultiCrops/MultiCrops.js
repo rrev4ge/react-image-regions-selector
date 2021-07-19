@@ -21,7 +21,15 @@ class MultiCrops extends Component {
 
   id = shortid.generate()
 
-  leftClickActive = false
+  prevCoordinate = {};
+  prevCoordinates = [];
+
+  isEscBtnTarget = false
+  isNewCrop = false
+  coorList=[]
+  isLeftBtnTarget = false
+
+  
 
   renderCrops = (props) => {
     const indexedMap = addIndex(map)
@@ -31,10 +39,11 @@ class MultiCrops extends Component {
         key={coor.id || index}
         index={index}
         coordinate={coor}
-        leftClickActive={this.leftClickActive}
         {...props}
       />))(props.coordinates)
   }
+
+  
 
   getCursorPosition = (e) => {
     const { left, top } = this.container.getBoundingClientRect()
@@ -45,24 +54,34 @@ class MultiCrops extends Component {
   }
 
   handleMouseDown = (e) => {
-
+    console.log(this);
+    const { coordinates } = this.props
     if (e.button === 0) {
-      const { coordinates } = this.props
+
+      this.isLeftBtnTarget = true;
+      
       if (e.target === this.img || e.target === this.container) {
         const { x, y } = this.getCursorPosition(e)
 
-        this.drawingIndex = coordinates.length
-        this.pointA = { x, y }
-        this.id = shortid.generate()
+        this.drawingIndex = coordinates.length;
+        this.pointA = { x, y };
+        this.id = shortid.generate();
         this.leftClickActive = true;
+        this.prevCoordinate = {};
+        this.prevCoordinates = clone(coordinates);
+      
       }
+      
     }
   }
 
 
   handleMouseMove = (e) => {
 
-    if (e.button === 0) {
+    if (e.button === 0 && this.isEscBtnTarget === true) {
+      return null
+    }
+    if (e.button === 0 && this.isEscBtnTarget === false) {
     const { onDraw, onChange, coordinates } = this.props
     const { pointA } = this
     if (isValidPoint(pointA)) {
@@ -89,14 +108,43 @@ class MultiCrops extends Component {
     }
   }
 
+  resetCrop = (e) => {
+
+    
+    const { onDraw, onChange } = this.props
+
+      
+    if (is(Function, onChange)) {
+      onChange(this.coordinate, this.drawingIndex-1, this.prevCoordinates)
+    }
+    
+    this.pointA = {};
+    this.isNewCrop = false;
+    this.isLeftBtnTarget = false;
+    this.isEscBtnTarget = false;
+  }
+
 
   handleMouseUp = (e) => {
+    this.pointA = {};
+    this.isNewCrop = false;
+    this.isLeftBtnTarget = false;
+    this.isEscBtnTarget = false;
+    console.log(this.isEscBtnTarget );
+  }
 
-    if (e.button === 0) {
+  onKeyDownParent = (e) => {
+   if (e.code === "Escape") {
+      this.isEscBtnTarget = true;
+      console.log(this.isEscBtnTarget);
+    } 
+  }
+
+  onKeyUpParent = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // this.onMouseUp();
     
-      this.pointA = {};
-      this.leftClickActive = false;
-    }
   }
 
 
@@ -112,8 +160,10 @@ class MultiCrops extends Component {
         }}
         onMouseDown={this.handleMouseDown}
         onMouseMove={this.handleMouseMove}
-        onMouseUp={this.handleMouseUp}
+        onMouseUp={()=>(!this.isEscBtnTarget ? this.handleMouseUp() : this.resetCrop())}
         ref={container => this.container = container}
+        onKeyDown={this.onKeyDownParent}
+        onKeyUp={this.onKeyUpParent}
         tabIndex="0"
       >
         <img
