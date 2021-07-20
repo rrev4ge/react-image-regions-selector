@@ -47,16 +47,25 @@ class MultiCrops extends Component {
 
   getCursorPosition = (e) => {
     const { left, top } = this.container.getBoundingClientRect()
-    return {
+    if (e.type === 'touchstart' || e.type === 'touchmove') {
+      return {
+        x: e.touches[0].pageX - left,
+        y: e.touches[0].pageY - top,
+      }
+    }
+    if (e.type === 'mousedown' || e.type === 'mousemove') {
+      return {
       x: e.clientX - left,
       y: e.clientY - top,
+      }
     }
+    
   }
 
   handleMouseDown = (e) => {
     const { coordinates } = this.props
-    if (e.button === 0) {
-
+    if (e.button === 0 || e.type === 'touchstart') {
+      console.log(e)
       this.isLeftBtnTarget = true;
       
       if (e.target === this.img || e.target === this.container) {
@@ -76,11 +85,10 @@ class MultiCrops extends Component {
 
 
   handleMouseMove = (e) => {
+    console.log(e)
 
-    if (e.button === 0 && this.isEscBtnTarget === true) {
-      return null
-    }
-    if (e.button === 0 && this.isEscBtnTarget === false) {
+    
+    if ((e.button === 0 || e.type === 'touchmove' ) && this.isEscBtnTarget === false) {
     const { onDraw, onChange, coordinates } = this.props
     const { pointA } = this
     if (isValidPoint(pointA)) {
@@ -116,9 +124,6 @@ class MultiCrops extends Component {
     if (is(Function, onRestore)) {
       onRestore(this.prevCoordinate, this.drawingIndex-1, this.prevCoordinates)
     }
-    // if (is(Function, onDraw)) {
-    //   onDraw(this.prevCoordinate, this.drawingIndex, this.prevCoordinates)
-    // }
 
     this.pointA = {};
     this.isNewCrop = false;
@@ -128,14 +133,15 @@ class MultiCrops extends Component {
 
 
   handleMouseUp = (e) => {
+    console.log(e)
 
     const { onDraw, onChange } = this.props
 
-    
     this.pointA = {};
     this.isNewCrop = false;
     this.isLeftBtnTarget = false;
     this.isEscBtnTarget = false;
+
   }
 
   onKeyDownParent = (e) => {
@@ -164,10 +170,12 @@ class MultiCrops extends Component {
           touchAction: 'none',
           userSelect: 'none',
         }}
-        
+        onTouchStart={this.handleMouseDown}
+        onTouchMove={this.handleMouseMove}
+        onTouchEnd={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.resetCrop(e)}}
         onMouseDown={this.handleMouseDown}
         onMouseMove={this.handleMouseMove}
-        onMouseUp={()=>(!this.isEscBtnTarget ? this.handleMouseUp() : this.resetCrop())}
+        onMouseUp={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.resetCrop(e)}}
         ref={container => this.container = container}
         onKeyDown={this.onKeyDownParent}
         onKeyUp={this.onKeyUpParent}

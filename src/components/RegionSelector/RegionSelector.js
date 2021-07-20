@@ -19,7 +19,10 @@ const canvasListStyle = {
 const regionSelectorStyle = {
   width: '600px',
   height: '70vh',
-  backgroundColor: 'lightgrey'
+  backgroundColor: 'lightgrey',
+  msTouchAction: 'none',
+  touchAction: 'none',
+  userSelect: 'none'
 }
 
 const RegionSelector = (props) => {
@@ -53,8 +56,10 @@ const RegionSelector = (props) => {
 
   return (
     <div 
-    style={regionSelectorStyle} 
-    onClick={(e)=>{if (e.button === 0){setCompletedCrops(crops)}}}>
+      style={regionSelectorStyle} 
+      onTouchEnd={(e)=>{setCompletedCrops(crops)}}
+      onClick={(e)=>{if (e.button === 0){setCompletedCrops(crops)}}}
+    >
       <MultiCrops
         src={src}
         width={'600'}
