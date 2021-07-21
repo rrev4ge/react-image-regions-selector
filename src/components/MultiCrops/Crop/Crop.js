@@ -117,6 +117,11 @@ class Crop extends Component {
       if (is(Function, onDrag)  && e.type === 'dragmove') {
         onDrag(nextCoordinate, index, nextCoordinates)
       }
+
+      if (['dragend', 'resizeend'].includes(e.type)) {
+        this.props.isChange(e);
+      }
+      
       
   }
 
@@ -133,6 +138,10 @@ class Crop extends Component {
       this.prevCoordinate = { ...coordinate}
       this.prevCoordinates = [...coordinates]
       this.prevCoordinates = update(index, this.prevCoordinate, coordinates)
+    }
+
+    if (['dragstart', 'resizestart'].includes(e.type)) {
+        this.props.isChange(e);
     }
     
   }
@@ -200,6 +209,7 @@ class Crop extends Component {
     e.preventDefault();
     e.stopPropagation();
     if (e.code === "Escape") {
+      console.log('Escape');
       this.handleRestore();
         this.isLeftBtnActive = false;
     } 
@@ -262,6 +272,7 @@ Crop.propTypes = {
   onComplete: PropTypes.func, // eslint-disable-line
   onRestore: PropTypes.func, // eslint-disable-line
   coordinates: PropTypes.array, // eslint-disable-line
+  isChange: PropTypes.func, // eslint-disable-line
 }
 
 export default Crop

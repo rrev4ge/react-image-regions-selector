@@ -53,6 +53,11 @@ const RegionSelector = (props) => {
     setCompletedCrops(crops);
   }, []);
 
+  const onComplete = useCallback((crop, index, crops) => {
+    setCrops(crops);
+    setCompletedCrops(crops);
+  }, []);
+
 
   return (
     <div 
@@ -67,6 +72,7 @@ const RegionSelector = (props) => {
         onChange={onChange}
         onDelete={onDelete}
         onRestore={onRestore}
+        onComplete={onComplete}
         onLoad={onLoad}
         
       />

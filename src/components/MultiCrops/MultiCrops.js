@@ -24,12 +24,21 @@ class MultiCrops extends Component {
   prevCoordinate = {};
   prevCoordinates = [];
 
-  isEscBtnTarget = false
-  isNewCrop = false
-  coorList=[]
-  isLeftBtnTarget = false
+  mouseEnter=true;
+  isEscBtnTarget = false;
+  isDragResize = false;
+  isLeftBtnTarget = false;
 
-  
+  isChange =(e)=>{
+    if (['dragstart', 'resizestart'].includes(e.type)) {
+        this.isDragResize = true;
+        console.log({E:e.type, D:this.isDragResize});
+    }
+    if (['dragend', 'resizeend'].includes(e.type)) {
+        this.isDragResize = false;
+        console.log({E:e.type, D:this.isDragResize});
+    }
+  }
 
   renderCrops = (props) => {
     const indexedMap = addIndex(map)
@@ -39,6 +48,7 @@ class MultiCrops extends Component {
         key={coor.id || index}
         index={index}
         coordinate={coor}
+        isChange={(e)=>{this.isChange(e)}}
         {...props}
       />))(props.coordinates)
   }
@@ -64,31 +74,69 @@ class MultiCrops extends Component {
 
   handleMouseDown = (e) => {
     const { coordinates } = this.props
+    this.isDragResize = false;
     if (e.button === 0 || e.type === 'touchstart') {
-      console.log(e)
       this.isLeftBtnTarget = true;
-      
+      console.log(this.isDragResize);
       if (e.target === this.img || e.target === this.container) {
-        const { x, y } = this.getCursorPosition(e)
-
+        const { x, y } = this.getCursorPosition(e);
         this.drawingIndex = coordinates.length;
         this.pointA = { x, y };
         this.id = shortid.generate();
-        this.leftClickActive = true;
+        this.isLeftBtnTarget = true;
         this.prevCoordinate = {};
         this.prevCoordinates = clone(coordinates);
-      
+        this.isEscBtnTarget = false;
+        
       }
-      
     }
   }
 
+  outsideEvents = (e) => {
+    
+    const { onRestore, coordinates, coordinate } = this.props
+    if (e.button === 0) {
+      if (this.isEscBtnTarget !== true) {
+        this.isEscBtnTarget = false;
+        if (is(Function, onRestore)) {
+          onRestore(coordinate, this.drawingIndex, coordinates)
+        }
+        this.handleMouseUp(e);
+      }
+      if(this.isEscBtnTarget === true && e.target !== this.container){
+        this.restoreCrops(e);
+        this.isEscBtnTarget = false;
+      }
+      document.removeEventListener('mouseup', this.outsideEvents, true)
+      document.removeEventListener('keyup', this.outsideEvents, true)
+      document.removeEventListener('contextmenu', this.outsideEvents, true)
+    }
+    
+    if (e.code === "Escape") {
+      
+      this.isEscBtnTarget = true;
+     
+    }
+    
+    if (e.button === 2 ) {
+      console.log(e.code)
+      e.preventDefault();
+      e.stopPropagation();
+      console.log({E:e, TARGET:e.target, THIS:this.container})
+      if(e.target !== this.container){
+        
+        this.restoreCrops(e);
+      }
+      document.removeEventListener('mouseup', this.outsideEvents, true)
+      document.removeEventListener('keyup', this.outsideEvents, true)
+      document.removeEventListener('contextmenu', this.outsideEvents, true)
+    }
+    
+    this.isLeftBtnTarget = false;
+  }
 
   handleMouseMove = (e) => {
-    console.log(e)
-
-    
-    if ((e.button === 0 || e.type === 'touchmove' ) && this.isEscBtnTarget === false) {
+    if ((e.button === 0 || e.type === 'touchmove' ) && e.target === this.img) {
     const { onDraw, onChange, coordinates } = this.props
     const { pointA } = this
     if (isValidPoint(pointA)) {
@@ -115,7 +163,7 @@ class MultiCrops extends Component {
     }
   }
 
-  resetCrop = (e) => {
+  restoreCrops = (e) => {
 
     
     const { onDraw, onChange, onRestore } = this.props
@@ -126,36 +174,50 @@ class MultiCrops extends Component {
     }
 
     this.pointA = {};
-    this.isNewCrop = false;
+    this.isLeftBtnTarget = false;
     this.isLeftBtnTarget = false;
     this.isEscBtnTarget = false;
   }
 
 
   handleMouseUp = (e) => {
-    console.log(e)
 
     const { onDraw, onChange } = this.props
 
     this.pointA = {};
-    this.isNewCrop = false;
     this.isLeftBtnTarget = false;
     this.isEscBtnTarget = false;
-
+    
   }
 
-  onKeyDownParent = (e) => {
+  handleMouseLeave = () => {
+    console.log(this.isDragResize);
+    if (this.isDragResize === false && this.isLeftBtnTarget === true) {
+      
+      console.log(this.isDragResize);
+      document.addEventListener('mouseup', this.outsideEvents, true)
+      document.addEventListener('keydown', this.outsideEvents, true)
+      document.addEventListener('contextmenu', this.outsideEvents, true)
+    }
+  } 
+
+  handleMouseEnter = () => {
+      document.removeEventListener('mouseup', this.outsideEvents, true)
+      document.removeEventListener('keydown', this.outsideEvents, true)
+      document.removeEventListener('contextmenu', this.outsideEvents, true)
+  } 
+
+
+   onKeyDown = (e) => {
    if (e.code === "Escape") {
       this.isEscBtnTarget = true;
     } 
   }
 
-  onKeyUpParent = (e) => {
+  onContextMenu = (e) => {
     e.preventDefault();
-    e.stopPropagation();
-    
+    e.stopPropagation(); 
   }
-
 
   render() {
     const {
@@ -172,13 +234,15 @@ class MultiCrops extends Component {
         }}
         onTouchStart={this.handleMouseDown}
         onTouchMove={this.handleMouseMove}
-        onTouchEnd={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.resetCrop(e)}}
+        onTouchEnd={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.restoreCrops(e)}}
         onMouseDown={this.handleMouseDown}
         onMouseMove={this.handleMouseMove}
-        onMouseUp={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.resetCrop(e)}}
+        onMouseLeave={this.handleMouseLeave}
+        onMouseEnter={this.handleMouseEnter}
+        onKeyDown={this.onKeyDown}
+        onContextMenu={this.isLeftBtnTarget ? this.onContextMenu : null}
+        onMouseUp={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.restoreCrops(e)}}
         ref={container => this.container = container}
-        onKeyDown={this.onKeyDownParent}
-        onKeyUp={this.onKeyUpParent}
         tabIndex="0"
       >
         <img
