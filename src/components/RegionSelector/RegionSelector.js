@@ -1,5 +1,5 @@
 import Canvas from './../Canvas/Canvas';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import MultiCrops from './../MultiCrops/MultiCrops';
 
 

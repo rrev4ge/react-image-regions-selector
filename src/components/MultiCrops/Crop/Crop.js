@@ -109,7 +109,7 @@ class Crop extends Component {
     const nextCoordinates = update(index, nextCoordinate)(coordinates)
 
       if (is(Function, onResize) && e.type === 'resizemove') {
-          onResize(nextCoordinate, index, nextCoordinates)
+        onResize(nextCoordinate, index, nextCoordinates)
       }
       if (is(Function, onChange) && ['dragmove', 'resizemove'].includes(e.type)) {
         onChange(nextCoordinate, index, nextCoordinates)
@@ -120,8 +120,8 @@ class Crop extends Component {
 
       if (['dragend', 'resizeend'].includes(e.type)) {
         this.props.isChange(e);
+        document.removeEventListener('contextmenu', this.onContextMenu, false);
       }
-      
       
   }
 
@@ -135,13 +135,11 @@ class Crop extends Component {
     } = this.props
     
     if (['dragstart', 'resizestart'].includes(e.type)) {
+      document.addEventListener('contextmenu', this.onContextMenu, false)
       this.prevCoordinate = { ...coordinate}
       this.prevCoordinates = [...coordinates]
       this.prevCoordinates = update(index, this.prevCoordinate, coordinates)
-    }
-
-    if (['dragstart', 'resizestart'].includes(e.type)) {
-        this.props.isChange(e);
+      this.props.isChange(e);
     }
     
   }
@@ -184,11 +182,14 @@ class Crop extends Component {
       }  
       
     }
-    return
+    return false;
   }
 
   onMouseDown = (e) => {
     if (e.button === 0) {
+      
+      // document.addEventListener('mouseup', this.outsideEvents, false)
+      // document.addEventListener('keydown', this.outsideEvents, false)
       this.isLeftBtnActive = true;
     }
     if (e.button === 2) {
@@ -198,6 +199,9 @@ class Crop extends Component {
 
   onMouseUp = (e) => {
     if (e.button === 0) {
+      document.removeEventListener('mouseup', this.outsideEvents, false)
+      document.removeEventListener('keydown', this.outsideEvents, false)
+      document.removeEventListener('contextmenu', this.onContextMenu, false)
       this.isLeftBtnActive = false;
     }
     if (e.button === 2) {
@@ -209,7 +213,6 @@ class Crop extends Component {
     e.preventDefault();
     e.stopPropagation();
     if (e.code === "Escape") {
-      console.log('Escape');
       this.handleRestore();
         this.isLeftBtnActive = false;
     } 
