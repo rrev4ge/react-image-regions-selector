@@ -134,7 +134,6 @@ class MultiCrops extends Component {
       const { pointA } = this
       if (isValidPoint(pointA) && (e.target.offsetParent===this.img.offsetParent)) {
         const pointB = this.getCursorPosition(e)
-        console.log({e:e.target.offsetParent,t:this.img.offsetParent})
         // get the drawing coordinate
         const coordinate = {
           x: Math.min(pointA.x, pointB.x),
