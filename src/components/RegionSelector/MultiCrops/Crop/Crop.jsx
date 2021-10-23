@@ -2,15 +2,16 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { equals, is, update, remove } from 'ramda'
 import interact from 'interactjs'
-import { DeleteIcon, NumberIcon } from './Icons'
+import {NumberIcon, DeleteIcon, CropContent} from './CropIcons'
 import styles from './Crop.module.scss'
 
 class Crop extends Component {
 
-  static cropStyle = (coordinate) => {
+  cropStyle = (coordinate) => {
+    // const { styles } = this.props
     const {
       x, y, width, height,
-    } = coordinate
+    } = coordinate;
 
     return {
       display: 'inline-block',
@@ -18,8 +19,8 @@ class Crop extends Component {
       transform: 'translate3d(0, 0, 0)',
       boxSizing: 'border-box',
       cursor: 'move',
-      width,
-      height,
+      width: width,
+      height: height,
       top: y,
       left: x,
       border: '1px solid',
@@ -29,6 +30,9 @@ class Crop extends Component {
       msTouchAction: 'none',
       touchAction: 'none',
       userSelect: 'none',
+      background: "#262626",
+      opacity: 0.5,
+      // ...styles,
     }
   }
 
@@ -43,7 +47,7 @@ class Crop extends Component {
       .draggable({
         modifiers: [
           interact.modifiers.restrictRect({
-            restriction: 'parent'
+            restriction: 'parent',
           })
         ],
       })
@@ -52,32 +56,36 @@ class Crop extends Component {
           left: true, right: true, bottom: true, top: true,
         },
         modifiers: [
-          interact.modifiers.restrictRect({
-            restriction: 'parent'
+          interact.modifiers.restrict({
+            restriction: 'parent',
+          }),
+          interact.modifiers.restrictSize({
+            min: { width: 1, height: 1 },
+            max: { width: this.props.parentImg?.width, height: this.props.parentImg?.height }
           })
         ],
       })
       .on(['dragstart', 'resizestart'], this.changeStartPosition)
       .on(['dragmove', 'dragend', 'resizemove', 'resizeend'], this.handleChange)
       .actionChecker(this.actionTrigger)
-  }
+  };
+
   shouldComponentUpdate(nextProps) {
     return !equals(nextProps.coordinate, this.props.coordinate)
-      || (nextProps.index !== this.props.index)
-  }
+      || (nextProps.index !== this.props.index);
+  };
 
   actionTrigger = (pointer, event, action, interactable, element, interaction) => {
     
-    
     if (event.type === 'pointermove') {
+
     }
 
     if (event.type === 'pointerdown') {
       
     }
 
-
-    return action
+    return action;
   }
 
   handleChange = (e) => {
@@ -87,26 +95,24 @@ class Crop extends Component {
       coordinate: { x, y },
       coordinates,
       onResize,
-      onRestore,
       onDrag,
       onChange,
-    } = this.props
-
+    } = this.props;
     
-    const { dx, dy } = e
+    const { dx, dy } = e;
 
     let nextCoordinate = {};
 
     if (e.type === 'resizemove') {
-      const { width, height } = e.rect
-      const { left, top } = e.deltaRect
-      nextCoordinate = {...coordinate, x: x + left, y: y + top, width, height,}
+      const { width, height } = e.rect;
+      const { left, top } = e.deltaRect;
+      nextCoordinate = {...coordinate, x: x + left, y: y + top, width, height};
     }
 
     if (e.type === 'dragmove') {
-      nextCoordinate = { ...coordinate, x: x + dx, y: y + dy }
+      nextCoordinate = { ...coordinate, x: x + dx, y: y + dy };
     }
-    const nextCoordinates = update(index, nextCoordinate)(coordinates)
+    const nextCoordinates = update(index, nextCoordinate)(coordinates);
 
       if (is(Function, onResize) && e.type === 'resizemove') {
         onResize(nextCoordinate, index, nextCoordinates)
@@ -117,12 +123,10 @@ class Crop extends Component {
       if (is(Function, onDrag)  && e.type === 'dragmove') {
         onDrag(nextCoordinate, index, nextCoordinates)
       }
-
       if (['dragend', 'resizeend'].includes(e.type)) {
         this.props.isChange(e);
         document.removeEventListener('contextmenu', this.onContextMenu, false);
       }
-      
   }
 
 
@@ -135,10 +139,10 @@ class Crop extends Component {
     } = this.props
     
     if (['dragstart', 'resizestart'].includes(e.type)) {
-      document.addEventListener('contextmenu', this.onContextMenu, false)
-      this.prevCoordinate = { ...coordinate}
-      this.prevCoordinates = [...coordinates]
-      this.prevCoordinates = update(index, this.prevCoordinate, coordinates)
+      document.addEventListener('contextmenu', this.onContextMenu, false);
+      this.prevCoordinate = { ...coordinate};
+      this.prevCoordinates = [...coordinates];
+      this.prevCoordinates = update(index, this.prevCoordinate, coordinates);
       this.props.isChange(e);
     }
     
@@ -148,10 +152,10 @@ class Crop extends Component {
     const {
       index,
       onRestore,
-    } = this.props
+    } = this.props;
 
     if (is(Function, onRestore)) {
-      onRestore(this.prevCoordinate, index, this.prevCoordinates)
+      onRestore(this.prevCoordinate, index, this.prevCoordinates);
     }
   }
 
@@ -161,7 +165,7 @@ class Crop extends Component {
       coordinate,
       onDelete,
       coordinates,
-    } = this.props
+    } = this.props;
     const nextCoordinates = remove(index, 1)(coordinates)
     if (is(Function, onDelete)) {
       onDelete(coordinate, index, nextCoordinates)
@@ -179,7 +183,7 @@ class Crop extends Component {
       if (this.isLeftBtnActive === true) {
         this.handleRestore();
         this.isLeftBtnActive = false;
-      }  
+      }
       
     }
     return false;
@@ -194,14 +198,14 @@ class Crop extends Component {
     }
     if (e.button === 2) {
       this.isRightBtnActive = true;
-    } 
+    }
   }
 
   onMouseUp = (e) => {
     if (e.button === 0) {
-      document.removeEventListener('mouseup', this.outsideEvents, false)
-      document.removeEventListener('keydown', this.outsideEvents, false)
-      document.removeEventListener('contextmenu', this.onContextMenu, false)
+      document.removeEventListener('mouseup', this.outsideEvents, false);
+      document.removeEventListener('keydown', this.outsideEvents, false);
+      document.removeEventListener('contextmenu', this.onContextMenu, false);
       this.isLeftBtnActive = false;
     }
     if (e.button === 2) {
@@ -224,36 +228,42 @@ class Crop extends Component {
   }
 
   componentWillUnmount() {
-    interact(this.crop)
-      .unset()
+    interact(this.crop).unset();
   }
 
   
   render() {
-    const { coordinate, index, } = this.props
+    const { coordinate, index, numberIcon, cropContent, deleteIcon } = this.props;
     return (
-      <div
-        onMouseDown={this.onMouseDown}
-        onMouseUp={this.onMouseUp}
-        onContextMenu={this.onContextMenu}
-        style={Crop.cropStyle(coordinate)}
-        ref={crop => this.crop = crop}
-        onKeyDown={this.onKeyDown}
-        onKeyUp={this.onKeyUp}
-        tabIndex='0'
-      >
-        <NumberIcon number={index + 1} />
-        {/* <DeleteIcon
-          onClick={this.handleDelete}
-        /> */}
-        {
-          [styles.ordN, styles.ordNe, styles.ordNw, styles.ordS, styles.ordSe, styles.ordSw, styles.ordE, styles.ordW]
-          .map(
-            (style, id)=> <div className={style} key={id} />
-          )
-        }
-      </div>
-    )
+        <div
+            onMouseDown={this.onMouseDown}
+            onMouseUp={this.onMouseUp}
+            onContextMenu={this.onContextMenu}
+            style={this.cropStyle(coordinate)}
+            ref={(crop) => (this.crop = crop)}
+            onKeyDown={this.onKeyDown}
+            onKeyUp={this.onKeyUp}
+            tabIndex="0"
+        >
+          {/*<div>*/}
+            {numberIcon && <NumberIcon number={index + 1} />}
+            {deleteIcon && <DeleteIcon onClick={this.handleDelete} />}
+            {cropContent && <CropContent content={coordinate?.content} />}
+          {/*</div>*/}
+            {[
+                styles.ordN,
+                styles.ordNe,
+                styles.ordNw,
+                styles.ordS,
+                styles.ordSe,
+                styles.ordSw,
+                styles.ordE,
+                styles.ordW,
+            ].map((style, id) => (
+                <div className={style} key={id} />
+            ))}
+        </div>
+    );
   }
 }
 
@@ -265,17 +275,30 @@ export const coordinateType = PropTypes.shape({
   height: PropTypes.number.isRequired,
 })
 
+const { number, string, bool, func, array, object } = PropTypes
+
 Crop.propTypes = {
   coordinate: coordinateType.isRequired,
-  index: PropTypes.number.isRequired,
-  onResize: PropTypes.func, // eslint-disable-line
-  onDrag: PropTypes.func, // eslint-disable-line
-  onDelete: PropTypes.func, // eslint-disable-line
-  onChange: PropTypes.func, // eslint-disable-line
-  onComplete: PropTypes.func, // eslint-disable-line
-  onRestore: PropTypes.func, // eslint-disable-line
-  coordinates: PropTypes.array, // eslint-disable-line
-  isChange: PropTypes.func, // eslint-disable-line
+  cropContent: bool,
+  deleteIcon: bool,
+  numberIcon: bool,
+  index: PropTypes.oneOfType([number, string]).isRequired,
+  onResize: func,
+  onDrag: func,
+  onDelete: func,
+  onChange: func,
+  onComplete: func,
+  onRestore: func,
+  coordinates: array,
+  isChange: func,
+  styles: object,
+}
+
+Crop.defaultProps = {
+  styles: {},
+  cropContent: false,
+  deleteIcon: true,
+  numberIcon: true,
 }
 
 export default Crop

@@ -15,18 +15,16 @@ const Home = () => {
   };
 
   return (
-    <div style = {{
-      position: 'absolute',
-      top: '10%',
-      left: '50%',
-      transform: 'translate(-50%, -10%)', 
-      display: 'flex',
-      flexFlow: 'column', 
-      alignItems: 'center',
-      justifyAlign: 'center',
-      justifyContent: 'space-evenly',
-      height: '100vh',
-    }}>
+    <div
+        style = {{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-evenly",
+            alignContent: "space-evenly",
+            flexDirection: "column",
+            gap: 25,
+        }}
+    >
       <div>
         <input type="file" accept="image/*" onChange={onSelectFile} />
       </div>
