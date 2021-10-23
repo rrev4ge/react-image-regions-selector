@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import { both, clone, is, complement, equals, map, addIndex } from 'ramda'
 import PropTypes from 'prop-types'
-import shortid from 'shortid'
+import { v4 as uuidv4 } from 'uuid';
 import Crop, { coordinateType } from './Crop/Crop'
-import { findAllByTestId } from '@testing-library/react'
 
 
 const isValidPoint = (point = {}) => {
@@ -16,11 +15,10 @@ const isValidPoint = (point = {}) => {
 
 
 class MultiCrops extends Component {
-  drawingIndex = -1
+  drawingIndex = -1;
 
-  pointA = {}
-
-  id = shortid.generate()
+  pointA = {};
+  id = uuidv4();
 
   prevCoordinate = {};
   prevCoordinates = [];
@@ -43,20 +41,23 @@ class MultiCrops extends Component {
   renderCrops = (props) => {
     const indexedMap = addIndex(map)
     return indexedMap((coor, index) =>
-      (<Crop
+    {
+      return (<Crop
         // improve performance when delet crop in middle array
         key={coor.id || index}
         index={index}
         coordinate={coor}
         isChange={(e)=>{this.isChange(e)}}
+        parentImg={this.img}
         {...props}
-      />))(props.coordinates)
+      />)})(props.coordinates)
   }
 
   
 
   getCursorPosition = (e) => {
-    const { left, top } = this.container.getBoundingClientRect()
+    const { left, top } = this.container.getBoundingClientRect();
+    // console.log({left, top, e})
     if (e.type === 'touchstart' || e.type === 'touchmove') {
       return {
         x: e.touches[0].pageX - left,
@@ -76,21 +77,20 @@ class MultiCrops extends Component {
     document.removeEventListener('mouseup', this.outsideEvents, false)
     document.removeEventListener('keydown', this.outsideEvents, false)
     document.removeEventListener('contextmenu', this.onContextMenu, false)
-    
-    const { coordinates } = this.props
     this.isDragResize = false;
-    if (e.button === 0 || e.type === 'touchstart') {
+    const { coordinates, maxCrops } = this.props
+    if ((coordinates.length <= maxCrops) && (e.button === 0 || e.type === 'touchstart')) {
       this.isLeftBtnTarget = true;
       if (e.target === this.img || e.target === this.container) {
         const { x, y } = this.getCursorPosition(e);
         this.drawingIndex = coordinates.length;
         this.pointA = { x, y };
-        this.id = shortid.generate();
+        this.id = uuidv4();
         this.isLeftBtnTarget = true;
         this.prevCoordinate = {};
         this.prevCoordinates = clone(coordinates);
         this.isEscBtnTarget = false;
-        
+
       }
     }
   }
@@ -129,9 +129,9 @@ class MultiCrops extends Component {
   }
 
   handleMouseMove = (e) => {
-    if ((e.button === 0 || e.type === 'touchmove' )) {
-      const { onDraw, onChange, coordinates } = this.props
-      const { pointA } = this
+
+    const { props:{onDraw, onChange, coordinates, maxCrops}, pointA } = this
+    if ((coordinates.length <= maxCrops) && (e.button === 0 || e.type === 'touchmove' )) {
       if (isValidPoint(pointA) && (e.target.offsetParent===this.img.offsetParent)) {
         const pointB = this.getCursorPosition(e)
         // get the drawing coordinate
@@ -141,7 +141,7 @@ class MultiCrops extends Component {
           width: Math.abs(pointA.x - pointB.x),
           height: Math.abs(pointA.y - pointB.y),
           id: this.id,
-        }
+        };
         const nextCoordinates = clone(coordinates)
         nextCoordinates[this.drawingIndex] = coordinate
         if (is(Function, onDraw)) {
@@ -211,17 +211,18 @@ class MultiCrops extends Component {
 
   render() {
     const {
-      src, width, height, onLoad,
+      src, onLoad,
     } = this.props
     return (
       <div
-        style={{
-          display: 'inline-block',
-          position: 'relative',
-          msTouchAction: 'none',
-          touchAction: 'none',
-          userSelect: 'none',
-        }}
+          style={{
+            border: "none",
+            boxSizing: "content-box",
+            position: 'relative',
+            msTouchAction: 'none',
+            touchAction: 'none',
+            userSelect: 'none',
+          }}
         onTouchStart={this.handleMouseDown}
         onTouchMove={this.handleMouseMove}
         onTouchEnd={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.restoreCrops(e)}}
@@ -236,28 +237,29 @@ class MultiCrops extends Component {
       >
         <img
           ref={img => this.img = img}
+          width={"100%"}
           src={src}
-          width={width}
-          height={height}
           onLoad={onLoad}
           alt=""
           draggable={false}
           onDragStart={(e) => { e.preventDefault() }}
         />
         {this.renderCrops(this.props)}
-
       </div>
     )
   }
 }
 
 const {
-  string, arrayOf, number, func,
+  string, arrayOf, number, func, bool,
 } = PropTypes
 
 MultiCrops.propTypes = {
   coordinates: arrayOf(coordinateType),
   src: string,
+  cropContent: bool,
+  deleteIcon: bool,
+  numberIcon: bool,
   width: number, // eslint-disable-line
   height: number, // eslint-disable-line
   onDraw: func, // eslint-disable-line
@@ -265,11 +267,17 @@ MultiCrops.propTypes = {
   onComplete: func, // eslint-disable-line
   onRestore: func, // eslint-disable-line
   onLoad: func, // eslint-disable-line
+  inProportions: bool,
+  maxCrops: number,
 }
 
 MultiCrops.defaultProps = {
   coordinates: [],
   src: '',
+  cropContent: false,
+  deleteIcon: true,
+  numberIcon: true,
+  maxCrops: Infinity,
 }
 
 export { removeid, addid } from './utils'
