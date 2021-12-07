@@ -1,285 +1,288 @@
-import React, { Component } from 'react'
-import { both, clone, is, complement, equals, map, addIndex } from 'ramda'
-import PropTypes from 'prop-types'
-import { v4 as uuidv4 } from 'uuid';
-import Crop, { coordinateType } from './Crop/Crop'
+import React, { useRef, useState } from "react";
+import { addIndex, both, clone, complement, equals, is, map } from "ramda";
+import PropTypes from "prop-types";
+import { v4 as uuidv4 } from "uuid";
+import Crop, { coordinateType } from "./Crop/Crop";
 
 
 const isValidPoint = (point = {}) => {
-  const strictNumber = number => both(
-    is(Number),
-    complement(equals(NaN)),
-  )(number)
-  return strictNumber(point.x) && strictNumber(point.y)
-}
+    const strictNumber = number => both(
+        is(Number),
+        complement(equals(NaN)),
+    )(number);
+    return strictNumber(point.x) && strictNumber(point.y);
+};
 
 
-class MultiCrops extends Component {
-  drawingIndex = -1;
+const MultiCrops = (props) => {
 
-  pointA = {};
-  id = uuidv4();
+    const imgRef = useRef(null);
+    const containerRef = useRef(null);
 
-  prevCoordinate = {};
-  prevCoordinates = [];
+    const [drawingIndex, setDrawingIndex] = useState(-1);
+    const [pointA, setPointA] = useState({});
 
-  isEscBtnTarget = false;
-  isDragResize = false;
-  isLeftBtnTarget = false;
-  mouseLeave = false;
+    const [id, setId] = useState(uuidv4());
 
-  isChange =(e)=>{
-    if (['dragstart', 'resizestart'].includes(e.type)) {
-        this.isDragResize = true;
-    }
+    const [prevCoordinate, setPrevCoordinate] = useState({});
+    const [prevCoordinates, setPrevCoordinates] = useState([]);
 
-    if (['dragend', 'resizeend'].includes(e.type)) {
-        this.isDragResize = false;
-    }
-  }
 
-  renderCrops = (props) => {
-    const indexedMap = addIndex(map)
-    return indexedMap((coor, index) =>
-    {
-      return (<Crop
-        // improve performance when delet crop in middle array
-        key={coor.id || index}
-        index={index}
-        coordinate={coor}
-        isChange={(e)=>{this.isChange(e)}}
-        parentImg={this.img}
-        {...props}
-      />)})(props.coordinates)
-  }
+    const [isEscBtnTarget, setIsEscBtnTarget] = useState(false);
+    const [isDragResize, setIsDragResize] = useState(false);
+    const [isLeftBtnTarget, setIsLeftBtnTarget] = useState(false);
+    const [mouseLeave, setMouseLeave] = useState(false);
 
-  
 
-  getCursorPosition = (e) => {
-    const { left, top } = this.container.getBoundingClientRect();
-    // console.log({left, top, e})
-    if (e.type === 'touchstart' || e.type === 'touchmove') {
-      return {
-        x: e.touches[0].pageX - left,
-        y: e.touches[0].pageY - top,
-      }
-    }
-    if (e.type === 'mousedown' || e.type === 'mousemove') {
-      return {
-      x: e.clientX - left,
-      y: e.clientY - top,
-      }
-    }
-    
-  }
+    const isChange = (e) => {
+        if (["dragstart", "resizestart"].includes(e.type)) {
+            setIsDragResize(true);
+        }
+        if (["dragend", "resizeend"].includes(e.type)) {
+            setIsDragResize(false);
+        }
+    };
 
-  handleMouseDown = (e) => {
-    document.removeEventListener('mouseup', this.outsideEvents, false)
-    document.removeEventListener('keydown', this.outsideEvents, false)
-    document.removeEventListener('contextmenu', this.onContextMenu, false)
-    this.isDragResize = false;
-    const { coordinates, maxCrops } = this.props
-    if ((coordinates.length <= maxCrops) && (e.button === 0 || e.type === 'touchstart')) {
-      this.isLeftBtnTarget = true;
-      if (e.target === this.img || e.target === this.container) {
-        const { x, y } = this.getCursorPosition(e);
-        this.drawingIndex = coordinates.length;
-        this.pointA = { x, y };
-        this.id = uuidv4();
-        this.isLeftBtnTarget = true;
-        this.prevCoordinate = {};
-        this.prevCoordinates = clone(coordinates);
-        this.isEscBtnTarget = false;
+    const renderCrops = (props) => {
+        const indexedMap = addIndex(map);
+        return indexedMap((coor, index) => {
+            return (<Crop
+                // improve performance when delet crop in middle array
+                key={coor.id || index}
+                index={index}
+                coordinate={coor}
+                isChange={(e) => {
+                    isChange(e);
+                }}
+                parentImg={imgRef.current}
+                {...props}
+            />);
+        })(props.coordinates);
+    };
 
-      }
-    }
-  }
 
-  outsideEvents = (e) => {
-    
-    const { onRestore, coordinates, coordinate } = this.props
-    if (e.button === 0) {
-      
-      if (this.isEscBtnTarget === false) {
+    const getCursorPosition = (e) => {
+        const {left, top} = containerRef.current.getBoundingClientRect();
+        if (e.type === "touchstart" || e.type === "touchmove") {
+            return {
+                x: e.touches[0].pageX - left,
+                y: e.touches[0].pageY - top,
+            };
+        }
+        if (e.type === "mousedown" || e.type === "mousemove") {
+            return {
+                x: e.clientX - left,
+                y: e.clientY - top,
+            };
+        }
+
+    };
+
+    const handleMouseDown = (e) => {
+        document.removeEventListener("mouseup", outsideEvents, false);
+        document.removeEventListener("keydown", outsideEvents, false);
+        document.removeEventListener("contextmenu", onContextMenu, false);
+        setIsDragResize(false);
+        const {coordinates, maxCrops} = props;
+        if ((coordinates.length <= maxCrops) && (e.button === 0 || e.type === "touchstart")) {
+            setIsLeftBtnTarget( true);
+            if (e.target === imgRef.current || e.target === containerRef.current) {
+                const {x, y} = getCursorPosition(e);
+                setDrawingIndex(coordinates.length);
+                setPointA({x, y});
+                setId(uuidv4());
+                setIsLeftBtnTarget(true);
+                setPrevCoordinate({});
+                setPrevCoordinates(clone(coordinates));
+                setIsEscBtnTarget(false);
+            }
+        }
+    };
+
+    const outsideEvents = (e) => {
+
+        const {onRestore, coordinates, coordinate} = props;
+        if (e.button === 0) {
+
+            if (isEscBtnTarget === false) {
+                if (is(Function, onRestore)) {
+                    onRestore(coordinate, drawingIndex, coordinates);
+                }
+                handleMouseUp(e);
+            }
+            if (isEscBtnTarget === true && e.target !== imgRef.current) {
+                restoreCrops(e);
+                setIsEscBtnTarget(false);
+            }
+            document.removeEventListener("mouseup", outsideEvents, false);
+            document.removeEventListener("keydown", outsideEvents, false);
+            document.removeEventListener("contextmenu", onContextMenu, false);
+        }
+
+        if (e.code === "Escape") {
+            setIsEscBtnTarget(true);
+        }
+
+        if (e.button === 2) {
+            if (e.target !== imgRef.current) {
+                restoreCrops(e);
+            }
+        }
+        return false;
+    };
+
+    const handleMouseMove = (e) => {
+
+        const {onDraw, onChange, coordinates, maxCrops } = props;
+        if ((coordinates.length <= maxCrops) && (e.button === 0 || e.type === "touchmove")) {
+            if (isValidPoint(pointA) && (e.target.offsetParent === imgRef.current.offsetParent)) {
+                const pointB = getCursorPosition(e);
+                // get the drawing coordinate
+                const coordinate = {
+                    x: Math.min(pointA.x, pointB.x),
+                    y: Math.min(pointA.y, pointB.y),
+                    width: Math.abs(pointA.x - pointB.x),
+                    height: Math.abs(pointA.y - pointB.y),
+                    id: id,
+                };
+                const nextCoordinates = clone(coordinates);
+                nextCoordinates[drawingIndex] = coordinate;
+                if (is(Function, onDraw)) {
+                    onDraw(coordinate, drawingIndex, nextCoordinates);
+                }
+                if (is(Function, onChange)) {
+                    onChange(coordinate, drawingIndex, nextCoordinates);
+                }
+
+            }
+        }
+    };
+
+    const restoreCrops = () => {
+
+        const {onRestore} = props;
+
         if (is(Function, onRestore)) {
-          onRestore(coordinate, this.drawingIndex, coordinates)
-        }
-        this.handleMouseUp(e);
-      }
-      if(this.isEscBtnTarget === true && e.target !== this.img){
-        this.restoreCrops(e);
-        this.isEscBtnTarget = false;
-      }
-      document.removeEventListener('mouseup', this.outsideEvents, false)
-      document.removeEventListener('keydown', this.outsideEvents, false)
-      document.removeEventListener('contextmenu', this.onContextMenu, false)
-    }
-    
-    if (e.code === "Escape") {
-      this.isEscBtnTarget = true;
-    }
-    
-    if (e.button === 2 ) {
-      if(e.target !== this.img){
-        
-        this.restoreCrops(e);
-      }
-    }
-    return false;
-  }
-
-  handleMouseMove = (e) => {
-
-    const { props:{onDraw, onChange, coordinates, maxCrops}, pointA } = this
-    if ((coordinates.length <= maxCrops) && (e.button === 0 || e.type === 'touchmove' )) {
-      if (isValidPoint(pointA) && (e.target.offsetParent===this.img.offsetParent)) {
-        const pointB = this.getCursorPosition(e)
-        // get the drawing coordinate
-        const coordinate = {
-          x: Math.min(pointA.x, pointB.x),
-          y: Math.min(pointA.y, pointB.y),
-          width: Math.abs(pointA.x - pointB.x),
-          height: Math.abs(pointA.y - pointB.y),
-          id: this.id,
-        };
-        const nextCoordinates = clone(coordinates)
-        nextCoordinates[this.drawingIndex] = coordinate
-        if (is(Function, onDraw)) {
-          onDraw(coordinate, this.drawingIndex, nextCoordinates)
-        }
-        if (is(Function, onChange)) {
-          onChange(coordinate, this.drawingIndex, nextCoordinates)
+            onRestore(prevCoordinate, drawingIndex - 1, prevCoordinates);
         }
 
-      }
-    }
-  }
-
-  restoreCrops = (e) => {
-    
-    const { onRestore } = this.props
-
-      
-    if (is(Function, onRestore)) {
-      onRestore(this.prevCoordinate, this.drawingIndex-1, this.prevCoordinates)
-    }
-
-    this.pointA = {};
-    this.isLeftBtnTarget = false;
-    this.isEscBtnTarget = false;
-  }
+        setPointA({});
+        setIsLeftBtnTarget(false);
+        setIsEscBtnTarget(false);
+    };
 
 
-  handleMouseUp = (e) => {
+    const handleMouseUp = () => {
+        setPointA({});
+        setIsLeftBtnTarget(false);
+        setMouseLeave(false);
+        setIsEscBtnTarget(false);
 
-    this.pointA = {};
-    this.isLeftBtnTarget = false;
-    this.mouseLeave = false;
-    this.isEscBtnTarget = false;
-    
-  }
+    };
 
-  handleMouseLeave = (e) => {
-    if (this.isDragResize === false && this.isLeftBtnTarget === true) {
-      document.addEventListener('contextmenu', this.onContextMenu, false)
-      document.addEventListener('mouseup', this.outsideEvents, false)
-      document.addEventListener('keydown', this.outsideEvents, false)
-    }
-    this.mouseLeave = true;
-  } 
+    const handleMouseLeave = () => {
+        if (isDragResize === false && isLeftBtnTarget === true) {
+            document.addEventListener("contextmenu", onContextMenu, false);
+            document.addEventListener("mouseup", outsideEvents, false);
+            document.addEventListener("keydown", outsideEvents, false);
+        }
+        setMouseLeave(true);
+    };
 
-  handleMouseEnter = (e) => {
-      document.removeEventListener('mouseup', this.outsideEvents, false)
-      document.removeEventListener('keydown', this.outsideEvents, false)
-      document.removeEventListener('contextmenu', this.onContextMenu, false)
-      this.mouseLeave = false;
-  } 
-
-
-   onKeyDown = (e) => {
-   if (e.code === "Escape") {
-      this.isEscBtnTarget = true;
-    } 
-  }
-
-  onContextMenu = (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  }
+    const handleMouseEnter = () => {
+        document.removeEventListener("mouseup", outsideEvents, false);
+        document.removeEventListener("keydown", outsideEvents, false);
+        document.removeEventListener("contextmenu", onContextMenu, false);
+        setMouseLeave(false);
+    };
 
 
-  render() {
-    const {
-      src, onLoad,
-    } = this.props
+    const onKeyDown = (e) => {
+        if (e.code === "Escape") {
+            setIsEscBtnTarget(true);
+        }
+    };
+
+    const onContextMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    };
+
+    const {src, onLoad,} = props;
     return (
-      <div
-          style={{
-            border: "none",
-            boxSizing: "content-box",
-            position: 'relative',
-            msTouchAction: 'none',
-            touchAction: 'none',
-            userSelect: 'none',
-          }}
-        onTouchStart={this.handleMouseDown}
-        onTouchMove={this.handleMouseMove}
-        onTouchEnd={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.restoreCrops(e)}}
-        onMouseDown={this.handleMouseDown}
-        onMouseMove={this.handleMouseMove}
-        onMouseLeave={this.handleMouseLeave}
-        onMouseEnter={this.handleMouseEnter}
-        onKeyDown={this.onKeyDown}
-        onMouseUp={(e)=>{!this.isEscBtnTarget ? this.handleMouseUp(e) : this.restoreCrops(e)}}
-        ref={container => this.container = container}
-        tabIndex="0"
-      >
-        <img
-          ref={img => this.img = img}
-          width={"100%"}
-          src={src}
-          onLoad={onLoad}
-          alt=""
-          draggable={false}
-          onDragStart={(e) => { e.preventDefault() }}
-        />
-        {this.renderCrops(this.props)}
-      </div>
-    )
-  }
-}
+        <div
+            style={{
+                border: "none",
+                boxSizing: "content-box",
+                position: "relative",
+                msTouchAction: "none",
+                touchAction: "none",
+                userSelect: "none",
+            }}
+            onTouchStart={handleMouseDown}
+            onTouchMove={handleMouseMove}
+            onTouchEnd={(e) => {
+                !isEscBtnTarget ? handleMouseUp(e) : restoreCrops(e);
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            onMouseEnter={handleMouseEnter}
+            onKeyDown={onKeyDown}
+            onMouseUp={(e) => {
+                !isEscBtnTarget ? handleMouseUp(e) : restoreCrops(e);
+            }}
+            ref={container => containerRef.current = container}
+            tabIndex="0"
+        >
+            <img
+                ref={img => imgRef.current = img}
+                width={"100%"}
+                height={props.width / props.aspectRatio}
+                src={src}
+                onLoad={onLoad}
+                alt=""
+                draggable={false}
+                onDragStart={(e) => {
+                    e.preventDefault();
+                }}
+            />
+            {renderCrops(props)}
+        </div>
+    );
+};
 
 const {
-  string, arrayOf, number, func, bool,
-} = PropTypes
+    string, arrayOf, number, func, bool,
+} = PropTypes;
 
 MultiCrops.propTypes = {
-  coordinates: arrayOf(coordinateType),
-  src: string,
-  cropContent: bool,
-  deleteIcon: bool,
-  numberIcon: bool,
-  width: number, // eslint-disable-line
-  height: number, // eslint-disable-line
-  onDraw: func, // eslint-disable-line
-  onChange: func, // eslint-disable-line
-  onComplete: func, // eslint-disable-line
-  onRestore: func, // eslint-disable-line
-  onLoad: func, // eslint-disable-line
-  inProportions: bool,
-  maxCrops: number,
-}
+    coordinates: arrayOf(coordinateType),
+    src: string,
+    cropContent: bool,
+    deleteIcon: bool,
+    numberIcon: bool,
+    width: number, // eslint-disable-line
+    height: number, // eslint-disable-line
+    onDraw: func, // eslint-disable-line
+    onChange: func, // eslint-disable-line
+    onComplete: func, // eslint-disable-line
+    onRestore: func, // eslint-disable-line
+    onLoad: func, // eslint-disable-line
+    inProportions: bool,
+    maxCrops: number,
+};
 
 MultiCrops.defaultProps = {
-  coordinates: [],
-  src: '',
-  cropContent: false,
-  deleteIcon: true,
-  numberIcon: true,
-  maxCrops: Infinity,
-}
+    coordinates: [],
+    src: "",
+    cropContent: false,
+    deleteIcon: true,
+    numberIcon: true,
+    maxCrops: Infinity,
+};
 
-export { removeid, addid } from './utils'
-export default MultiCrops
+export { removeid, addid } from "./utils";
+export default MultiCrops;
 
