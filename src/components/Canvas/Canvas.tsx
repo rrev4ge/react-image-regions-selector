@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import { useCanvas } from "../../../hooks";
+import { useCanvas } from "../../hooks";
 
 function generateDownload(canvas, crop) {
     if (!crop || !canvas) {
