@@ -1,12 +1,12 @@
 import React from 'react'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 
-import { Home } from './Home'
+import HomePage from './pages/Home/HomePage'
 
 export const Routes = () => {
   return (
     <Router>
-      <Route exact path='/' component={Home} />
+      <Route exact path='/' component={HomePage} />
     </Router>
   )
 }

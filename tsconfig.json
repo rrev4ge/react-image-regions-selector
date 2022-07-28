@@ -23,6 +23,8 @@
     "importHelpers": true,
     "strict": true,
     "noImplicitAny": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
@@ -35,10 +37,13 @@
     "esModuleInterop": true
   },
   "exclude": [
-    "node_modules"
+    "build",
+    "node_modules",
+    "example/node_modules",
+    "example/build"
   ],
   "include": [
     "src",
-    "./declaration.d.ts"
+    "example/src"
   ]
 }

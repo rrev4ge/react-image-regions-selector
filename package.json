@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "Select and crop regions from image",
   "author": "rrev4ge <rev4ge@outlook.com>",
-  "license": "MIT see file LICENCE",
+  "license": "MIT",
   "repository": "rrev4ge/react-image-regions-selector",
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
@@ -36,14 +36,6 @@
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
-  },
-  "dependencies": {
-    "fabric": "^4.5.1",
-    "interactjs": "^1.10.11",
-    "lodash": "^4.17.21",
-    "prop-types": "^15.7.2",
-    "ramda": "^0.27.1",
-    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -79,7 +71,14 @@
     "react-dev-utils": ">=11.0.4",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.1",
-    "sass": "^1.54.0",
     "typescript": "^3.9.10"
+  },
+  "dependencies": {
+    "fabric": "^5.2.1",
+    "interactjs": "^1.10.17",
+    "lodash": "^4.17.21",
+    "ramda": "^0.28.0",
+    "sass": "^1.54.0",
+    "uuid": "^8.3.2"
   }
 }

@@ -1,12 +1,11 @@
-@use "sass:math";
-
-
 .regionSelector {
   display: flex;
   justify-content: space-evenly;
   align-items: flex-start;
   flex-wrap: wrap;
   gap: 8px;
+  width: 500;
+  background-color: black;
 }
 
 .multiCrops {
@@ -26,9 +25,9 @@
   gap: 8px;
   overflow: auto;
   scrollbar: none;
+}
 
-  &::-webkit-scrollbar {
-    width: 0;
-    height: 0;
-  }
+.canvasList::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }

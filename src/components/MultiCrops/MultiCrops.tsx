@@ -3,33 +3,35 @@ import { addIndex, both, clone, complement, equals, is, map } from 'ramda';
 import { v4 as uuidv4 } from 'uuid';
 import Crop, { TCoordinateType } from './Crop/Crop';
 
-const isValidPoint = (point = { x: 0, y: 0 }) => {
+const isValidPoint = (point: {x?: number, y?: number} = {}): boolean => {
   const strictNumber = (number) => both(is(Number), complement(equals(NaN)))(number);
-  return strictNumber(point.x) && strictNumber(point.y);
+  if (point?.x && point?.y) {
+    return strictNumber(point.x) && strictNumber(point.y);
+  }
+  return false;
 };
 
-export interface IMultiCropsProps {
-  coordinate?: TCoordinateType;
-  coordinates?: TCoordinateType[];
-  src?: string;
-  cropContent: boolean;
-  hasDeleteButton?: boolean;
-  hasNumberIcon?: boolean;
-  width: number;
-  height?: number;
-  onDraw?: (...rest) => any | void;
-  onChange: (...rest) => any | void;
-  onComplete: (...rest) => any | void;
-  onRestore: (...rest) => any | void;
-  onDelete: (...rest) => any | void;
-  onLoad: (...rest) => any | void;
-  inProportions?: boolean;
-  maxCrops?: number;
-  aspectRatio: number;
-  styles?: CSSProperties;
-}
+// export interface IMultiCropsProps {
+//   coordinate?: TCoordinateType;
+//   coordinates?: TCoordinateType[];
+//   src?: string;
+//   cropContent?: boolean;
+//   hasDeleteButton?: boolean;
+//   hasNumberIcon?: boolean;
+//   width: number;
+//   height?: number;
+//   onDraw?: (...rest) => any | void;
+//   onChange: (...rest) => any | void;
+//   onComplete: (...rest) => any | void;
+//   onRestore: (...rest) => any | void;
+//   onDelete: (...rest) => any | void;
+//   onLoad: (...rest) => any | void;
+//   inProportions?: boolean;
+//   maxCrops?: number;
+//   aspectRatio: number;
+// }
 
-const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
+const MultiCrops = (props) => {
   const {
     coordinate,
     coordinates = [],
@@ -53,7 +55,7 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [drawingIndex, setDrawingIndex] = useState(-1);
-  const [pointA, setPointA] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [pointA, setPointA] = useState<{ x?: number; y?: number }>({});
 
   const [id, setId] = useState(uuidv4());
 
@@ -165,20 +167,23 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
       if (isValidPoint(pointA) && e.target.offsetParent === imgRef?.current?.offsetParent) {
         const pointB = getCursorPosition(e);
         // get the drawing coordinate
-        const coordinate = {
-          x: Math.min(pointA.x, pointB.x),
-          y: Math.min(pointA.y, pointB.y),
-          width: Math.abs(pointA.x - pointB.x),
-          height: Math.abs(pointA.y - pointB.y),
-          id,
-        };
-        const nextCoordinates = clone(coordinates);
-        nextCoordinates[drawingIndex] = coordinate;
-        if (onDraw && is(Function, onDraw)) {
-          onDraw(coordinate, drawingIndex, nextCoordinates);
-        }
-        if (is(Function, onChange)) {
-          onChange(coordinate, drawingIndex, nextCoordinates);
+        if (pointA.x && pointA.y) {
+          const coordinate = {
+            x: Math.min(pointA.x, pointB.x),
+            y: Math.min(pointA.y, pointB.y),
+            width: Math.abs(pointA.x - pointB.x),
+            height: Math.abs(pointA.y - pointB.y),
+            id,
+          };
+
+          const nextCoordinates = clone(coordinates);
+          nextCoordinates[drawingIndex] = coordinate;
+          if (onDraw && is(Function, onDraw)) {
+            onDraw(coordinate, drawingIndex, nextCoordinates);
+          }
+          if (is(Function, onChange)) {
+            onChange(coordinate, drawingIndex, nextCoordinates);
+          }
         }
       }
     }
@@ -265,20 +270,21 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
       }}
       tabIndex={0}
     >
-      <img
-        ref={(img) => {
-          imgRef.current = img;
-        }}
-        width="100%"
-        height={width / aspectRatio}
-        src={src}
-        onLoad={onLoad}
-        alt=""
-        draggable={false}
-        onDragStart={(e) => {
-          e.preventDefault();
-        }}
-      />
+      {src &&
+        <img
+          ref={(img) => {
+            imgRef.current = img;
+          }}
+          width="100%"
+          height={width / aspectRatio}
+          src={src}
+          onLoad={onLoad}
+          alt=""
+          draggable={false}
+          onDragStart={(e) => {
+            e.preventDefault();
+          }}
+        />}
       {renderCrops(props)}
     </div>
   );

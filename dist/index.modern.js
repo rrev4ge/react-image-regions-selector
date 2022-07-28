@@ -1,39 +1,23 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { update, is, remove, map, assoc, omit, addIndex, clone, both, complement, equals } from 'ramda';
+import React, { useRef, useEffect, useState, Component, useCallback } from 'react';
+import { update, is, remove, equals, map, assoc, omit, addIndex, clone, both, complement } from 'ramda';
 import _ from 'lodash';
 import { v4 } from 'uuid';
 import interact from 'interactjs';
-import PropTypes from 'prop-types';
 
-function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
-    }
-
-    return target;
-  };
-  return _extends.apply(this, arguments);
-}
-
-var useCanvas = function useCanvas(props, callback) {
-  var crop = props.crop,
-      img = props.img;
-  var canvasRef = useRef(null);
-  var imgRef = useRef(null);
+const useCanvas = (props, callback) => {
+  const {
+    crop,
+    img
+  } = props;
+  const canvasRef = useRef(null);
+  const imgRef = useRef(null);
   imgRef.current = img;
-  useEffect(function () {
-    var image = imgRef.current;
-    var canvas = canvasRef.current;
+  useEffect(() => {
+    const image = imgRef.current;
+    const canvas = canvasRef.current;
 
     if (canvas) {
-      var canvasContext = canvas.getContext('2d');
+      const canvasContext = canvas.getContext('2d');
 
       if (canvasContext) {
         callback([canvas, canvasContext, image]);
@@ -43,47 +27,31 @@ var useCanvas = function useCanvas(props, callback) {
   return canvasRef;
 };
 
-var useDidMountEffect = function useDidMountEffect(func, deps) {
-  var didMount = useRef(false);
-  useEffect(function () {
-    if (didMount.current) {
-      func();
-    } else {
-      didMount.current = true;
-    }
-  }, deps);
-};
-
 function generateDownload(canvas, crop) {
   if (!crop || !canvas) {
     return;
   }
 
-  canvas.toBlob(function (blob) {
-    var previewUrl = window.URL.createObjectURL(blob);
-    var anchor = document.createElement('a');
-    anchor.download = "crop_" + crop.id + ".png";
+  canvas.toBlob(blob => {
+    const previewUrl = window.URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.download = `crop_${crop.id}.png`;
     anchor.href = URL.createObjectURL(blob);
     anchor.click();
     window.URL.revokeObjectURL(previewUrl);
   }, 'image/png', 1);
 }
 
-var Canvas = function Canvas(props) {
-  var _props$crop = props.crop,
-      crop = _props$crop === void 0 ? null : _props$crop;
-
-  var _useState = useState(false),
-      isHover = _useState[0],
-      setIsHover = _useState[1];
-
-  var canvasRef = useCanvas(props, function (_ref) {
-    var canvas = _ref[0],
-        canvasContext = _ref[1],
-        image = _ref[2];
-    var scaleX = image.naturalWidth / image.width;
-    var scaleY = image.naturalHeight / image.height;
-    var pixelRatio = window.devicePixelRatio;
+const Canvas = props => {
+  const {
+    crop = null,
+    img = null
+  } = props;
+  const [isHover, setIsHover] = useState(false);
+  const canvasRef = useCanvas(props, ([canvas, canvasContext, image]) => {
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    const pixelRatio = window.devicePixelRatio;
     canvas.width = crop.width * pixelRatio;
     canvas.height = crop.height * pixelRatio;
     canvasContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
@@ -94,10 +62,10 @@ var Canvas = function Canvas(props) {
     style: {
       position: 'relative'
     },
-    onMouseEnter: function onMouseEnter() {
+    onMouseEnter: () => {
       setIsHover(true);
     },
-    onMouseLeave: function onMouseLeave() {
+    onMouseLeave: () => {
       setIsHover(false);
     }
   }, /*#__PURE__*/React.createElement("canvas", {
@@ -115,79 +83,257 @@ var Canvas = function Canvas(props) {
       opacity: 0.5,
       cursor: 'pointer'
     },
-    onClick: function onClick() {
-      return generateDownload(canvasRef.current, crop);
-    }
+    onClick: () => generateDownload(canvasRef.current, crop)
   }, "Download"));
 };
 
-var styles = {"rmcIconContainer":"_17jGb","rmcRemove":"_2D0hp","numberIcon":"_3R7bI","cropContent":"_21A1G","ordN":"_19ntT","ordNe":"_1Zl9b","ordNw":"_3C514","ordS":"_2tvc1","ordSe":"_1sWTP","ordSw":"_2HC6Y","ordE":"_3L_y_","ordW":"_K3lk6","ord-n":"_36aZb","ord-e":"_MMQaN","ord-s":"_qAshv","ord-w":"_2RsOK"};
+var styles = {"rmcIconContainer":"_Crop-module__rmcIconContainer__17jGb","rmcRemove":"_Crop-module__rmcRemove__2D0hp","numberIcon":"_Crop-module__numberIcon__3R7bI","cropContent":"_Crop-module__cropContent__21A1G","ordN":"_Crop-module__ordN__19ntT","ordNe":"_Crop-module__ordNe__1Zl9b","ordNw":"_Crop-module__ordNw__3C514","ordS":"_Crop-module__ordS__2tvc1","ordSe":"_Crop-module__ordSe__1sWTP","ordSw":"_Crop-module__ordSw__2HC6Y","ordE":"_Crop-module__ordE__3L_y_","ordW":"_Crop-module__ordW__K3lk6","ord-n":"_Crop-module__ord-n__36aZb","ord-e":"_Crop-module__ord-e__MMQaN","ord-s":"_Crop-module__ord-s__qAshv","ord-w":"_Crop-module__ord-w__2RsOK"};
 
-var DeleteIcon = function DeleteIcon(props) {
-  return /*#__PURE__*/React.createElement("div", _extends({
-    className: styles.rmcIconContainer
-  }, props), /*#__PURE__*/React.createElement("div", {
-    className: styles.rmcRemove
-  }));
-};
-var NumberIcon = function NumberIcon(_ref) {
-  var number = _ref.number;
-  return /*#__PURE__*/React.createElement("div", {
-    className: styles.numberIcon
-  }, number);
-};
-var CropContent = function CropContent(_ref2) {
-  var content = _ref2.content;
-  return /*#__PURE__*/React.createElement("div", {
-    className: styles.cropContent
-  }, content);
-};
-var number = PropTypes.number,
-    string = PropTypes.string;
-NumberIcon.propTypes = {
-  number: PropTypes.oneOfType([number, string])
-};
-NumberIcon.defaultProps = {
-  number: ''
-};
+const DeleteIcon = props => /*#__PURE__*/React.createElement("div", Object.assign({
+  className: styles.rmcIconContainer
+}, props), /*#__PURE__*/React.createElement("div", {
+  className: styles.rmcRemove
+}));
+const NumberIcon = ({
+  number: _number = ''
+}) => /*#__PURE__*/React.createElement("div", {
+  className: styles.numberIcon
+}, _number);
+const CropContent = ({
+  content
+}) => /*#__PURE__*/React.createElement("div", {
+  className: styles.cropContent
+}, content);
 
-var Crop = function Crop(props) {
-  var coordinate = props.coordinate,
-      coordinates = props.coordinates,
-      _props$cropContent = props.cropContent,
-      cropContent = _props$cropContent === void 0 ? false : _props$cropContent,
-      _props$hasDeleteButto = props.hasDeleteButton,
-      hasDeleteButton = _props$hasDeleteButto === void 0 ? true : _props$hasDeleteButto,
-      _props$hasNumberIcon = props.hasNumberIcon,
-      hasNumberIcon = _props$hasNumberIcon === void 0 ? true : _props$hasNumberIcon,
-      index = props.index,
-      onResize = props.onResize,
-      onDrag = props.onDrag,
-      onDelete = props.onDelete,
-      onChange = props.onChange,
-      onComplete = props.onComplete,
-      onRestore = props.onRestore,
-      isChange = props.isChange,
-      parentImg = props.parentImg;
+class Crop extends Component {
+  constructor() {
+    super(...arguments);
+    this.prevCoordinate = {};
+    this.prevCoordinates = [];
+    this.isLeftBtnActive = false;
+    this.isRightBtnActive = false;
 
-  var _useState = useState(),
-      prevCoordinate = _useState[0],
-      setPrevCoordinate = _useState[1];
+    this.handleChange = e => {
+      const {
+        index,
+        coordinate,
+        coordinate: {
+          x,
+          y
+        },
+        coordinates,
+        onResize,
+        onDrag,
+        onChange,
+        onComplete,
+        isChange,
+        parentImg
+      } = this.props;
+      const {
+        dx,
+        dy
+      } = e;
+      let nextCoordinate = {};
 
-  var _useState2 = useState([]),
-      prevCoordinates = _useState2[0],
-      setPrevCoordinates = _useState2[1];
+      if (e.type === 'resizemove') {
+        const {
+          rect: {
+            width,
+            height
+          },
+          deltaRect: {
+            left,
+            top,
+            right,
+            bottom
+          }
+        } = e;
+        const resizeCoordinate = { ...((x + left >= 0 && x + left + width < parentImg.width || x + left >= 0 && left < 0) && {
+            x: x + left
+          }),
+          ...((y + top >= 0 && y + top + height < parentImg.height || y + top >= 0 && top < 0) && {
+            y: y + top
+          })
+        };
+        const resize = {
+          width: resizeCoordinate.x + width <= parentImg.width ? x + left <= 0 && right === 0 ? coordinate.width : width : coordinate.width,
+          height: resizeCoordinate.y + height <= parentImg.height ? y + top <= 0 && bottom === 0 ? coordinate.height : height : coordinate.height
+        };
+        nextCoordinate = { ...coordinate,
+          ...resizeCoordinate,
+          ...resize
+        };
+      }
 
-  var _useState3 = useState(false),
-      isLeftBtnActive = _useState3[0],
-      setIsLeftBtnActive = _useState3[1];
+      if (e.type === 'dragmove') {
+        nextCoordinate = { ...coordinate,
+          x: x + dx,
+          y: y + dy
+        };
+      }
 
-  var _useState4 = useState(false),
-      setIsRightBtnActive = _useState4[1];
+      const nextCoordinates = update(index, nextCoordinate)(coordinates);
 
-  var cropRef = useRef(null);
-  useEffect(function () {
-    interact(cropRef.current).draggable({
+      if (is(Function, onResize) && e.type === 'resizemove') {
+        onResize(nextCoordinate, index, nextCoordinates);
+      }
+
+      if (is(Function, onChange) && ['dragmove', 'resizemove'].includes(e.type)) {
+        onChange(nextCoordinate, index, nextCoordinates);
+      }
+
+      if (is(Function, onDrag) && e.type === 'dragmove') {
+        onDrag(nextCoordinate, index, nextCoordinates);
+      }
+
+      if (['dragend', 'resizeend'].includes(e.type)) {
+        onComplete(coordinate, index, coordinates);
+        isChange(e);
+        document.removeEventListener('contextmenu', this.onContextMenu, false);
+      }
+    };
+
+    this.changeStartPosition = e => {
+      const {
+        index,
+        coordinate,
+        coordinates,
+        isChange
+      } = this.props;
+
+      if (['dragstart', 'resizestart'].includes(e.type)) {
+        document.addEventListener('contextmenu', this.onContextMenu, false);
+        this.prevCoordinate = { ...coordinate
+        };
+        this.prevCoordinates = [...coordinates];
+        this.prevCoordinates = update(index, this.prevCoordinate, coordinates);
+        isChange(e);
+      }
+    };
+
+    this.handleRestore = () => {
+      const {
+        index,
+        onRestore
+      } = this.props;
+
+      if (is(Function, onRestore)) {
+        onRestore(this.prevCoordinate, index, this.prevCoordinates);
+      }
+    };
+
+    this.handleDelete = () => {
+      const {
+        index,
+        coordinate,
+        onDelete,
+        coordinates
+      } = this.props;
+      const nextCoordinates = remove(index, 1)(coordinates);
+
+      if (is(Function, onDelete)) {
+        onDelete(coordinate, index, nextCoordinates);
+      }
+    };
+
+    this.onContextMenu = e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.button === 2) {
+        if (this.isLeftBtnActive === false) {
+          this.handleDelete();
+        }
+
+        if (this.isLeftBtnActive === true) {
+          this.handleRestore();
+          this.isLeftBtnActive = false;
+        }
+      }
+
+      return false;
+    };
+
+    this.onMouseDown = e => {
+      if (e.button === 0) {
+        document.addEventListener('mouseup', this.outsideEvents, false);
+        document.addEventListener('keydown', this.outsideEvents, false);
+        this.isLeftBtnActive = true;
+      }
+
+      if (e.button === 2) {
+        this.isRightBtnActive = true;
+      }
+    };
+
+    this.onMouseUp = e => {
+      if (e.button === 0) {
+        document.removeEventListener('mouseup', this.outsideEvents, false);
+        document.removeEventListener('keydown', this.outsideEvents, false);
+        document.removeEventListener('contextmenu', this.onContextMenu, false);
+        this.isLeftBtnActive = false;
+      }
+
+      if (e.button === 2) {
+        this.isRightBtnActive = false;
+      }
+    };
+
+    this.onKeyDown = e => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.code === 'Escape') {
+        this.handleRestore();
+        this.isLeftBtnActive = false;
+      }
+    };
+
+    this.onKeyUp = e => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    this.cropStyle = coordinate => {
+      const {
+        x,
+        y,
+        width,
+        height
+      } = coordinate;
+      return {
+        display: 'inline-block',
+        position: 'absolute',
+        transform: 'translate3d(0, 0, 0)',
+        boxSizing: 'border-box',
+        cursor: 'move',
+        width,
+        height,
+        top: y,
+        left: x,
+        border: '1px solid',
+        borderImageSource: 'url("data:image/gif;base64,R0lGODlhCgAKAJECAAAAAP///////wAAACH/C05FVFNDQVBFMi4wAwEAAAAh/wtYTVAgRGF0YVhNUDw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OEI5RDc5MTFDNkE2MTFFM0JCMDZEODI2QTI4MzJBOTIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OEI5RDc5MTBDNkE2MTFFM0JCMDZEODI2QTI4MzJBOTIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuZGlkOjAyODAxMTc0MDcyMDY4MTE4MDgzQzNDMjA5MzREQ0ZDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjAyODAxMTc0MDcyMDY4MTE4MDgzQzNDMjA5MzREQ0ZDIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEBQoAAgAsAAAAAAoACgAAAhWEERkn7W3ei7KlagMWF/dKgYeyGAUAIfkEBQoAAgAsAAAAAAoACgAAAg+UYwLJ7RnQm7QmsCyVKhUAIfkEBQoAAgAsAAAAAAoACgAAAhCUYgLJHdiinNSAVfOEKoUCACH5BAUKAAIALAAAAAAKAAoAAAIRVISAdusPo3RAzYtjaMIaUQAAIfkEBQoAAgAsAAAAAAoACgAAAg+MDiem7Q8bSLFaG5il6xQAIfkEBQoAAgAsAAAAAAoACgAAAg+UYRLJ7QnQm7SmsCyVKhUAIfkEBQoAAgAsAAAAAAoACgAAAhCUYBLJDdiinNSEVfOEKoECACH5BAUKAAIALAAAAAAKAAoAAAIRFISBdusPo3RBzYsjaMIaUQAAOw==")',
+        borderImageSlice: '1',
+        borderImageRepeat: 'repeat',
+        msTouchAction: 'none',
+        touchAction: 'none',
+        userSelect: 'none',
+        background: '#262626',
+        opacity: 0.5
+      };
+    };
+
+    this.actionTrigger = (pointer, event, action, interactable, element, interaction) => {
+
+      return action;
+    };
+  }
+
+  componentDidMount() {
+    const {
+      parentImg
+    } = this.props;
+    interact(this.crop).draggable({
       modifiers: [interact.modifiers.restrictRect({
         restriction: 'parent'
       }), interact.modifiers.restrictSize({
@@ -221,278 +367,99 @@ var Crop = function Crop(props) {
         }
       })],
       inertia: true
-    }).on(['dragstart', 'resizestart'], changeStartPosition).on(['dragmove', 'dragend', 'resizemove', 'resizeend'], handleChange).actionChecker(actionTrigger);
-    return function () {
-      interact(cropRef.current).unset();
-    };
-  }, []);
-
-  var handleChange = function handleChange(e) {
-    var x = coordinate.x,
-        y = coordinate.y;
-    var dx = e.dx,
-        dy = e.dy;
-    var nextCoordinate = {};
-
-    if (e.type === 'resizemove') {
-      var _e$rect = e.rect,
-          width = _e$rect.width,
-          height = _e$rect.height,
-          _e$deltaRect = e.deltaRect,
-          left = _e$deltaRect.left,
-          top = _e$deltaRect.top,
-          right = _e$deltaRect.right,
-          bottom = _e$deltaRect.bottom;
-
-      var resizeCoordinate = _extends({}, (x + left >= 0 && x + left + width < parentImg.width || x + left >= 0 && left < 0) && {
-        x: x + left
-      }, (y + top >= 0 && y + top + height < parentImg.height || y + top >= 0 && top < 0) && {
-        y: y + top
-      });
-
-      var resize = {
-        width: resizeCoordinate.x + width <= parentImg.width ? x + left <= 0 && right === 0 ? coordinate.width : width : coordinate.width,
-        height: resizeCoordinate.y + height <= parentImg.height ? y + top <= 0 && bottom === 0 ? coordinate.height : height : coordinate.height
-      };
-      nextCoordinate = _extends({}, coordinate, resizeCoordinate, resize);
-    }
-
-    if (e.type === 'dragmove') {
-      nextCoordinate = _extends({}, coordinate, {
-        x: x + dx,
-        y: y + dy
-      });
-    }
-
-    var nextCoordinates = update(index, nextCoordinate)(coordinates);
-
-    if (is(Function, onResize) && e.type === 'resizemove') {
-      onResize(nextCoordinate, index, nextCoordinates);
-    }
-
-    if (is(Function, onChange) && ['dragmove', 'resizemove'].includes(e.type)) {
-      onChange(nextCoordinate, index, nextCoordinates);
-    }
-
-    if (is(Function, onDrag) && e.type === 'dragmove') {
-      onDrag(nextCoordinate, index, nextCoordinates);
-    }
-
-    if (['dragend', 'resizeend'].includes(e.type)) {
-      onComplete(coordinate, index, coordinates);
-      isChange(e);
-      document.removeEventListener('contextmenu', onContextMenu, false);
-    }
-  };
-
-  var changeStartPosition = function changeStartPosition(e) {
-    if (['dragstart', 'resizestart'].includes(e.type)) {
-      document.addEventListener('contextmenu', onContextMenu, false);
-      setPrevCoordinate(_extends({}, coordinate));
-      setPrevCoordinates(update(index, prevCoordinate, coordinates));
-      isChange(e);
-    }
-  };
-
-  var handleRestore = function handleRestore() {
-    if (is(Function, onRestore)) {
-      onRestore(prevCoordinate, index, prevCoordinates);
-    }
-  };
-
-  var handleDelete = function handleDelete() {
-    var nextCoordinates = remove(index, 1)(coordinates);
-
-    if (is(Function, onDelete)) {
-      onDelete(coordinate, index, nextCoordinates);
-    }
-  };
-
-  var onContextMenu = function onContextMenu(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (e.button === 2) {
-      if (isLeftBtnActive === false) {
-        handleDelete();
-      }
-
-      if (isLeftBtnActive === true) {
-        handleRestore();
-        setIsLeftBtnActive(false);
-      }
-    }
-
-    return false;
-  };
-
-  var onMouseDown = function onMouseDown(e) {
-    if (e.button === 0) {
-      setIsLeftBtnActive(true);
-    }
-
-    if (e.button === 2) {
-      setIsRightBtnActive(true);
-    }
-  };
-
-  var onMouseUp = function onMouseUp(e) {
-    if (e.button === 0) {
-      document.removeEventListener('contextmenu', onContextMenu, false);
-      setIsLeftBtnActive(false);
-    }
-
-    if (e.button === 2) {
-      setIsRightBtnActive(false);
-    }
-  };
-
-  var onKeyDown = function onKeyDown(e) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (e.code === 'Escape') {
-      handleRestore();
-      setIsLeftBtnActive(false);
-    }
-  };
-
-  var onKeyUp = function onKeyUp(e) {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  var cropStyle = function cropStyle(coordinate) {
-    var x = coordinate.x,
-        y = coordinate.y,
-        width = coordinate.width,
-        height = coordinate.height;
-    return {
-      display: 'inline-block',
-      position: 'absolute',
-      transform: 'translate3d(0, 0, 0)',
-      boxSizing: 'border-box',
-      cursor: 'move',
-      width: width,
-      height: height,
-      top: y,
-      left: x,
-      border: '1px solid',
-      borderImageSource: 'url("data:image/gif;base64,R0lGODlhCgAKAJECAAAAAP///////wAAACH/C05FVFNDQVBFMi4wAwEAAAAh/wtYTVAgRGF0YVhNUDw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OEI5RDc5MTFDNkE2MTFFM0JCMDZEODI2QTI4MzJBOTIiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OEI5RDc5MTBDNkE2MTFFM0JCMDZEODI2QTI4MzJBOTIiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoTWFjaW50b3NoKSI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuZGlkOjAyODAxMTc0MDcyMDY4MTE4MDgzQzNDMjA5MzREQ0ZDIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjAyODAxMTc0MDcyMDY4MTE4MDgzQzNDMjA5MzREQ0ZDIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+Af/+/fz7+vn49/b19PPy8fDv7u3s6+rp6Ofm5eTj4uHg397d3Nva2djX1tXU09LR0M/OzczLysnIx8bFxMPCwcC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWko6KhoJ+enZybmpmYl5aVlJOSkZCPjo2Mi4qJiIeGhYSDgoGAf359fHt6eXh3dnV0c3JxcG9ubWxramloZ2ZlZGNiYWBfXl1cW1pZWFdWVVRTUlFQT05NTEtKSUhHRkVEQ0JBQD8+PTw7Ojk4NzY1NDMyMTAvLi0sKyopKCcmJSQjIiEgHx4dHBsaGRgXFhUUExIREA8ODQwLCgkIBwYFBAMCAQAAIfkEBQoAAgAsAAAAAAoACgAAAhWEERkn7W3ei7KlagMWF/dKgYeyGAUAIfkEBQoAAgAsAAAAAAoACgAAAg+UYwLJ7RnQm7QmsCyVKhUAIfkEBQoAAgAsAAAAAAoACgAAAhCUYgLJHdiinNSAVfOEKoUCACH5BAUKAAIALAAAAAAKAAoAAAIRVISAdusPo3RAzYtjaMIaUQAAIfkEBQoAAgAsAAAAAAoACgAAAg+MDiem7Q8bSLFaG5il6xQAIfkEBQoAAgAsAAAAAAoACgAAAg+UYRLJ7QnQm7SmsCyVKhUAIfkEBQoAAgAsAAAAAAoACgAAAhCUYBLJDdiinNSEVfOEKoECACH5BAUKAAIALAAAAAAKAAoAAAIRFISBdusPo3RBzYsjaMIaUQAAOw==")',
-      borderImageSlice: '1',
-      borderImageRepeat: 'repeat',
-      msTouchAction: 'none',
-      touchAction: 'none',
-      userSelect: 'none',
-      background: '#262626',
-      opacity: 0.5
-    };
-  };
-
-  var actionTrigger = function actionTrigger(pointer, event, action, interactable, element, interaction) {
-
-    return action;
-  };
-
-  return /*#__PURE__*/React.createElement("div", {
-    onMouseDown: onMouseDown,
-    onMouseUp: onMouseUp,
-    onContextMenu: onContextMenu,
-    style: cropStyle(coordinate),
-    ref: function ref(crop) {
-      cropRef.current = crop;
-    },
-    onKeyDown: onKeyDown,
-    onKeyUp: onKeyUp,
-    tabIndex: 0
-  }, hasNumberIcon && /*#__PURE__*/React.createElement(NumberIcon, {
-    number: index + 1
-  }), hasDeleteButton && /*#__PURE__*/React.createElement(DeleteIcon, {
-    onClick: handleDelete
-  }), cropContent && /*#__PURE__*/React.createElement(CropContent, {
-    content: coordinate === null || coordinate === void 0 ? void 0 : coordinate.content
-  }), [styles.ordN, styles.ordNe, styles.ordNw, styles.ordS, styles.ordSe, styles.ordSw, styles.ordE, styles.ordW].map(function (style, id) {
-    return /*#__PURE__*/React.createElement("div", {
-      className: style,
-      key: id
-    });
-  }));
-};
-
-var addId = map(assoc('id', v4()));
-var removeId = map(omit(['id']));
-
-var isValidPoint = function isValidPoint(point) {
-  if (point === void 0) {
-    point = {
-      x: 0,
-      y: 0
-    };
+    }).on(['dragstart', 'resizestart'], this.changeStartPosition).on(['dragmove', 'dragend', 'resizemove', 'resizeend'], this.handleChange).actionChecker(this.actionTrigger);
   }
 
-  var strictNumber = function strictNumber(number) {
-    return both(is(Number), complement(equals(NaN)))(number);
-  };
+  shouldComponentUpdate(nextProps) {
+    const {
+      coordinate,
+      index
+    } = this.props;
+    return !equals(nextProps.coordinate, coordinate) || nextProps.index !== index;
+  }
 
-  return strictNumber(point.x) && strictNumber(point.y);
+  componentWillUnmount() {
+    interact(this.crop).unset();
+  }
+
+  render() {
+    const {
+      coordinate,
+      index,
+      hasNumberIcon,
+      cropContent,
+      hasDeleteButton
+    } = this.props;
+    return /*#__PURE__*/React.createElement("div", {
+      onMouseDown: this.onMouseDown,
+      onMouseUp: this.onMouseUp,
+      onContextMenu: this.onContextMenu,
+      style: this.cropStyle(coordinate),
+      ref: crop => {
+        this.crop = crop;
+      },
+      onKeyDown: this.onKeyDown,
+      onKeyUp: this.onKeyUp,
+      tabIndex: 0
+    }, hasNumberIcon && /*#__PURE__*/React.createElement(NumberIcon, {
+      number: index + 1
+    }), hasDeleteButton && /*#__PURE__*/React.createElement(DeleteIcon, {
+      onClick: this.handleDelete
+    }), cropContent && /*#__PURE__*/React.createElement(CropContent, {
+      content: coordinate === null || coordinate === void 0 ? void 0 : coordinate.content
+    }), [styles.ordN, styles.ordNe, styles.ordNw, styles.ordS, styles.ordSe, styles.ordSw, styles.ordE, styles.ordW].map((style, id) => /*#__PURE__*/React.createElement("div", {
+      className: style,
+      key: id
+    })));
+  }
+
+}
+
+const addId = map(assoc('id', v4()));
+const removeId = map(omit(['id']));
+
+const isValidPoint = (point = {}) => {
+  const strictNumber = number => both(is(Number), complement(equals(NaN)))(number);
+
+  if (point !== null && point !== void 0 && point.x && point !== null && point !== void 0 && point.y) {
+    return strictNumber(point.x) && strictNumber(point.y);
+  }
+
+  return false;
 };
 
-var MultiCrops = function MultiCrops(props) {
-  var coordinate = props.coordinate,
-      _props$coordinates = props.coordinates,
-      coordinates = _props$coordinates === void 0 ? [] : _props$coordinates,
-      _props$src = props.src,
-      src = _props$src === void 0 ? '' : _props$src,
-      _props$maxCrops = props.maxCrops,
-      maxCrops = _props$maxCrops === void 0 ? Infinity : _props$maxCrops,
-      width = props.width,
-      onDraw = props.onDraw,
-      onChange = props.onChange,
-      onRestore = props.onRestore,
-      onLoad = props.onLoad,
-      aspectRatio = props.aspectRatio;
-  var imgRef = useRef(null);
-  var containerRef = useRef(null);
+const MultiCrops = props => {
+  const {
+    coordinate,
+    coordinates = [],
+    src = '',
+    cropContent = false,
+    hasDeleteButton = true,
+    hasNumberIcon = true,
+    maxCrops = Infinity,
+    width,
+    height,
+    onDraw,
+    onChange,
+    onComplete,
+    onRestore,
+    onLoad,
+    inProportions,
+    aspectRatio
+  } = props;
+  const imgRef = useRef(null);
+  const containerRef = useRef(null);
+  const [drawingIndex, setDrawingIndex] = useState(-1);
+  const [pointA, setPointA] = useState({});
+  const [id, setId] = useState(v4());
+  const [prevCoordinate, setPrevCoordinate] = useState({});
+  const [prevCoordinates, setPrevCoordinates] = useState([]);
+  const [isEscBtnTarget, setIsEscBtnTarget] = useState(false);
+  const [isDragResize, setIsDragResize] = useState(false);
+  const [isLeftBtnTarget, setIsLeftBtnTarget] = useState(false);
+  const [mouseLeave, setMouseLeave] = useState(false);
 
-  var _useState = useState(-1),
-      drawingIndex = _useState[0],
-      setDrawingIndex = _useState[1];
-
-  var _useState2 = useState({
-    x: 0,
-    y: 0
-  }),
-      pointA = _useState2[0],
-      setPointA = _useState2[1];
-
-  var _useState3 = useState(v4()),
-      id = _useState3[0],
-      setId = _useState3[1];
-
-  var _useState4 = useState({}),
-      prevCoordinate = _useState4[0],
-      setPrevCoordinate = _useState4[1];
-
-  var _useState5 = useState([]),
-      prevCoordinates = _useState5[0],
-      setPrevCoordinates = _useState5[1];
-
-  var _useState6 = useState(false),
-      isEscBtnTarget = _useState6[0],
-      setIsEscBtnTarget = _useState6[1];
-
-  var _useState7 = useState(false),
-      isDragResize = _useState7[0],
-      setIsDragResize = _useState7[1];
-
-  var _useState8 = useState(false),
-      isLeftBtnTarget = _useState8[0],
-      setIsLeftBtnTarget = _useState8[1];
-
-  var _useState9 = useState(false),
-      setMouseLeave = _useState9[1];
-
-  var _isChange = function isChange(e) {
+  const isChange = e => {
     if (['dragstart', 'resizestart'].includes(e.type)) {
       setIsDragResize(true);
     }
@@ -502,26 +469,29 @@ var MultiCrops = function MultiCrops(props) {
     }
   };
 
-  var renderCrops = function renderCrops(props) {
-    var coordinates = props.coordinates;
-    var indexedMap = addIndex(map);
-    return indexedMap(function (coor, index) {
-      return /*#__PURE__*/React.createElement(Crop, _extends({
+  const renderCrops = props => {
+    const {
+      coordinates
+    } = props;
+    const indexedMap = addIndex(map);
+    return indexedMap((coor, index) => {
+      return /*#__PURE__*/React.createElement(Crop, Object.assign({
         key: coor.id || index,
         index: index,
         coordinate: coor,
-        isChange: function isChange(e) {
-          _isChange(e);
+        isChange: e => {
+          isChange(e);
         },
         parentImg: imgRef.current
       }, props));
     })(coordinates);
   };
 
-  var getCursorPosition = function getCursorPosition(e) {
-    var _containerRef$current = containerRef.current.getBoundingClientRect(),
-        left = _containerRef$current.left,
-        top = _containerRef$current.top;
+  const getCursorPosition = e => {
+    const {
+      left,
+      top
+    } = containerRef.current.getBoundingClientRect();
 
     if (e.type === 'touchstart' || e.type === 'touchmove') {
       return {
@@ -543,7 +513,7 @@ var MultiCrops = function MultiCrops(props) {
     };
   };
 
-  var handleMouseDown = function handleMouseDown(e) {
+  const handleMouseDown = e => {
     document.removeEventListener('mouseup', outsideEvents, false);
     document.removeEventListener('keydown', outsideEvents, false);
     document.removeEventListener('contextmenu', onContextMenu, false);
@@ -553,14 +523,14 @@ var MultiCrops = function MultiCrops(props) {
       setIsLeftBtnTarget(true);
 
       if (e.target === imgRef.current || e.target === containerRef.current) {
-        var _getCursorPosition = getCursorPosition(e),
-            x = _getCursorPosition.x,
-            y = _getCursorPosition.y;
-
+        const {
+          x,
+          y
+        } = getCursorPosition(e);
         setDrawingIndex(coordinates.length);
         setPointA({
-          x: x,
-          y: y
+          x,
+          y
         });
         setId(v4());
         setIsLeftBtnTarget(true);
@@ -571,7 +541,7 @@ var MultiCrops = function MultiCrops(props) {
     }
   };
 
-  var outsideEvents = function outsideEvents(e) {
+  const outsideEvents = e => {
     if (e.button === 0) {
       if (isEscBtnTarget === false) {
         if (is(Function, onRestore)) {
@@ -604,34 +574,37 @@ var MultiCrops = function MultiCrops(props) {
     return false;
   };
 
-  var handleMouseMove = function handleMouseMove(e) {
+  const handleMouseMove = e => {
     if (coordinates.length <= maxCrops && (e.button === 0 || e.type === 'touchmove')) {
       var _imgRef$current;
 
       if (isValidPoint(pointA) && e.target.offsetParent === (imgRef === null || imgRef === void 0 ? void 0 : (_imgRef$current = imgRef.current) === null || _imgRef$current === void 0 ? void 0 : _imgRef$current.offsetParent)) {
-        var pointB = getCursorPosition(e);
-        var _coordinate = {
-          x: Math.min(pointA.x, pointB.x),
-          y: Math.min(pointA.y, pointB.y),
-          width: Math.abs(pointA.x - pointB.x),
-          height: Math.abs(pointA.y - pointB.y),
-          id: id
-        };
-        var nextCoordinates = clone(coordinates);
-        nextCoordinates[drawingIndex] = _coordinate;
+        const pointB = getCursorPosition(e);
 
-        if (onDraw && is(Function, onDraw)) {
-          onDraw(_coordinate, drawingIndex, nextCoordinates);
-        }
+        if (pointA.x && pointA.y) {
+          const coordinate = {
+            x: Math.min(pointA.x, pointB.x),
+            y: Math.min(pointA.y, pointB.y),
+            width: Math.abs(pointA.x - pointB.x),
+            height: Math.abs(pointA.y - pointB.y),
+            id
+          };
+          const nextCoordinates = clone(coordinates);
+          nextCoordinates[drawingIndex] = coordinate;
 
-        if (is(Function, onChange)) {
-          onChange(_coordinate, drawingIndex, nextCoordinates);
+          if (onDraw && is(Function, onDraw)) {
+            onDraw(coordinate, drawingIndex, nextCoordinates);
+          }
+
+          if (is(Function, onChange)) {
+            onChange(coordinate, drawingIndex, nextCoordinates);
+          }
         }
       }
     }
   };
 
-  var restoreCrops = function restoreCrops() {
+  const restoreCrops = () => {
     if (is(Function, onRestore)) {
       onRestore(prevCoordinate, drawingIndex - 1, prevCoordinates);
     }
@@ -644,7 +617,7 @@ var MultiCrops = function MultiCrops(props) {
     setIsEscBtnTarget(false);
   };
 
-  var handleMouseUp = function handleMouseUp() {
+  const handleMouseUp = () => {
     setPointA({
       x: 0,
       y: 0
@@ -654,7 +627,7 @@ var MultiCrops = function MultiCrops(props) {
     setIsEscBtnTarget(false);
   };
 
-  var handleMouseLeave = function handleMouseLeave() {
+  const handleMouseLeave = () => {
     if (isDragResize === false && isLeftBtnTarget === true) {
       document.addEventListener('contextmenu', onContextMenu, false);
       document.addEventListener('mouseup', outsideEvents, false);
@@ -664,20 +637,20 @@ var MultiCrops = function MultiCrops(props) {
     setMouseLeave(true);
   };
 
-  var handleMouseEnter = function handleMouseEnter() {
+  const handleMouseEnter = () => {
     document.removeEventListener('mouseup', outsideEvents, false);
     document.removeEventListener('keydown', outsideEvents, false);
     document.removeEventListener('contextmenu', onContextMenu, false);
     setMouseLeave(false);
   };
 
-  var onKeyDown = function onKeyDown(e) {
+  const onKeyDown = e => {
     if (e.code === 'Escape') {
       setIsEscBtnTarget(true);
     }
   };
 
-  var onContextMenu = function onContextMenu(e) {
+  const onContextMenu = e => {
     e.preventDefault();
     e.stopPropagation();
     return false;
@@ -694,7 +667,7 @@ var MultiCrops = function MultiCrops(props) {
     },
     onTouchStart: handleMouseDown,
     onTouchMove: handleMouseMove,
-    onTouchEnd: function onTouchEnd() {
+    onTouchEnd: () => {
       if (!isEscBtnTarget) {
         handleMouseUp();
         return;
@@ -707,7 +680,7 @@ var MultiCrops = function MultiCrops(props) {
     onMouseLeave: handleMouseLeave,
     onMouseEnter: handleMouseEnter,
     onKeyDown: onKeyDown,
-    onMouseUp: function onMouseUp() {
+    onMouseUp: () => {
       if (!isEscBtnTarget) {
         handleMouseUp();
         return;
@@ -715,12 +688,12 @@ var MultiCrops = function MultiCrops(props) {
 
       restoreCrops();
     },
-    ref: function ref(container) {
+    ref: container => {
       containerRef.current = container;
     },
     tabIndex: 0
-  }, /*#__PURE__*/React.createElement("img", {
-    ref: function ref(img) {
+  }, src && /*#__PURE__*/React.createElement("img", {
+    ref: img => {
       imgRef.current = img;
     },
     width: "100%",
@@ -729,119 +702,101 @@ var MultiCrops = function MultiCrops(props) {
     onLoad: onLoad,
     alt: "",
     draggable: false,
-    onDragStart: function onDragStart(e) {
+    onDragStart: e => {
       e.preventDefault();
     }
   }), renderCrops(props));
 };
 
-var styles$1 = {"regionSelector":"_1NtRA","multiCrops":"_2BnZG","canvasList":"_F7Pcn"};
+var styles$1 = {"regionSelector":"_RegionSelector-module__regionSelector__1PnhP","multiCrops":"_RegionSelector-module__multiCrops__2NLMo","canvasList":"_RegionSelector-module__canvasList__vkya9"};
 
-var RegionSelector = function RegionSelector(props) {
+const RegionSelector = props => {
   var _imgRef$current;
 
-  var giveCompletedCrops = props.giveCompletedCrops,
-      _props$completedCrops = props.completedCrops,
-      completedCrops = _props$completedCrops === void 0 ? [] : _props$completedCrops,
-      _props$src = props.src,
-      src = _props$src === void 0 ? 'data:image/png;base64,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' : _props$src,
-      _props$isProportions = props.isProportions,
-      isProportions = _props$isProportions === void 0 ? false : _props$isProportions,
-      _props$isShowCanvas = props.isShowCanvas,
-      isShowCanvas = _props$isShowCanvas === void 0 ? true : _props$isShowCanvas,
-      _props$width = props.width,
-      width = _props$width === void 0 ? 500 : _props$width,
-      _props$aspectRatio = props.aspectRatio,
-      aspectRatio = _props$aspectRatio === void 0 ? 0.68 : _props$aspectRatio;
-  var imgRef = useRef(null);
+  const {
+    giveCompletedCrops = null,
+    completedCrops = [],
+    src = 'data:image/png;base64,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',
+    isProportions = false,
+    isShowCanvas = true,
+    maxCrops = 100,
+    giveCanvas,
+    width = 600,
+    aspectRatio = 0.68,
+    height = width / aspectRatio
+  } = props;
+  const imgRef = useRef();
+  const [crops, setCrops] = useState([]);
+  const [canvas, setCanvas] = useState([]);
+  const [didMount, setDidMount] = useState(false);
 
-  var _useState = useState([]),
-      crops = _useState[0],
-      setCrops = _useState[1];
-
-  var _useState2 = useState([]),
-      canvas = _useState2[0],
-      setCanvas = _useState2[1];
-
-  var _useState3 = useState(false);
-
-  var completed = function completed(crops) {
+  const completed = crops => {
     setCanvas(crops);
 
-    if (is(Function, giveCompletedCrops)) {
+    if (giveCompletedCrops && is(Function, giveCompletedCrops)) {
       if (isProportions) {
-        giveCompletedCrops(function () {
-          return crops.map(function (crop) {
-            return calcProportions(crop);
-          });
-        });
+        giveCompletedCrops && giveCompletedCrops(() => crops.map(crop => calcProportions(crop)));
       }
 
       if (!isProportions) {
-        giveCompletedCrops(crops);
+        giveCompletedCrops && giveCompletedCrops(crops);
       }
     }
   };
 
-  var calcPosition = function calcPosition(crop) {
-    var _ref = typeof (imgRef === null || imgRef === void 0 ? void 0 : imgRef.current) !== 'undefined' && (imgRef === null || imgRef === void 0 ? void 0 : imgRef.current) || {
+  const calcPosition = crop => {
+    const {
+      width,
+      height
+    } = typeof (imgRef === null || imgRef === void 0 ? void 0 : imgRef.current) !== 'undefined' && (imgRef === null || imgRef === void 0 ? void 0 : imgRef.current) || {
       width: 0,
       height: 0
-    },
-        width = _ref.width,
-        height = _ref.height;
-
-    return _extends({}, crop, {
+    };
+    return { ...crop,
       x: parseInt((width * crop.x).toFixed(0), 10),
       y: parseInt((height * crop.y).toFixed(0), 10),
       height: parseInt((height * crop.height).toFixed(0), 10),
       width: parseInt((width * crop.width).toFixed(0), 10)
-    });
+    };
   };
 
-  var calcProportions = function calcProportions(crop) {
-    var _ref2 = typeof (imgRef === null || imgRef === void 0 ? void 0 : imgRef.current) !== 'undefined' && (imgRef === null || imgRef === void 0 ? void 0 : imgRef.current) || {
+  const calcProportions = crop => {
+    const {
+      width,
+      height
+    } = typeof (imgRef === null || imgRef === void 0 ? void 0 : imgRef.current) !== 'undefined' && (imgRef === null || imgRef === void 0 ? void 0 : imgRef.current) || {
       width: 0,
       height: 0
-    },
-        width = _ref2.width,
-        height = _ref2.height;
-
-    return _extends({}, crop, {
+    };
+    return { ...crop,
       x: _.floor(crop.x / width, 3),
       y: _.floor(crop.y / height, 3),
       height: _.floor(crop.height / height, 3),
       width: _.floor(crop.width / width, 3)
-    });
+    };
   };
 
-  useDidMountEffect(function () {
-    if (isProportions) {
-      setCrops(function () {
-        return completedCrops.map(function (crop) {
-          return calcPosition(crop);
-        });
-      });
+  useEffect(() => {
+    if (didMount) {
+      if (isProportions) {
+        setCrops(() => completedCrops.map(crop => calcPosition(crop)));
+      }
+
+      if (!isProportions) {
+        setCrops(completedCrops);
+      }
     }
 
-    if (!isProportions) {
-      setCrops(completedCrops);
-    }
-  }, [completedCrops, imgRef.current.width]);
-  var onLoad = useCallback(function (img) {
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, [completedCrops]);
+  const onLoad = useCallback(img => {
     imgRef.current = img.target;
+    setDidMount(true);
 
     if (isProportions) {
-      setCrops(function () {
-        return completedCrops.map(function (crop) {
-          return calcPosition(crop);
-        });
-      });
-      setCanvas(function () {
-        return completedCrops.map(function (crop) {
-          return calcPosition(crop);
-        });
-      });
+      setCrops(() => completedCrops.map(crop => calcPosition(crop)));
+      setCanvas(() => completedCrops.map(crop => calcPosition(crop)));
     }
 
     if (!isProportions) {
@@ -849,16 +804,16 @@ var RegionSelector = function RegionSelector(props) {
       setCanvas(completedCrops);
     }
   }, [completedCrops, isProportions]);
-  var onChange = useCallback(function (crop, index, crops) {
+  const onChange = useCallback((crop, index, crops) => {
     setCrops(crops);
   }, []);
-  var onDelete = useCallback(function (crop, index, crops) {
+  const onDelete = useCallback((crop, index, crops) => {
     setCrops(crops);
   }, []);
-  var onRestore = useCallback(function (crop, index, crops) {
+  const onRestore = useCallback((crop, index, crops) => {
     setCrops(crops);
   }, []);
-  var onComplete = useCallback(function (crop, index, crops) {
+  const onComplete = useCallback((crop, index, crops) => {
     setCrops(crops);
     completed(crops);
   }, []);
@@ -869,17 +824,16 @@ var RegionSelector = function RegionSelector(props) {
       width: width || ((_imgRef$current = imgRef.current) === null || _imgRef$current === void 0 ? void 0 : _imgRef$current.width)
     },
     className: styles$1.multiCrops,
-    onTouchEnd: function onTouchEnd() {
+    onTouchEnd: () => {
       completed(crops);
     },
-    onMouseUp: function onMouseUp(e) {
+    onMouseUp: e => {
       if (e.button === 0) {
         completed(crops);
       }
     }
-  }, /*#__PURE__*/React.createElement(MultiCrops, _extends({
+  }, /*#__PURE__*/React.createElement(MultiCrops, Object.assign({
     src: src,
-    styles: styles$1,
     coordinates: crops,
     onChange: onChange,
     onDelete: onDelete,
@@ -891,16 +845,14 @@ var RegionSelector = function RegionSelector(props) {
   }, props))), isShowCanvas && /*#__PURE__*/React.createElement("div", {
     className: styles$1.canvasList,
     style: {
-      width: width,
+      width,
       height: width / aspectRatio
     }
-  }, canvas.map(function (crop, i) {
-    return /*#__PURE__*/React.createElement(Canvas, {
-      key: crop.id || i,
-      crop: crop,
-      img: imgRef.current
-    });
-  })));
+  }, canvas.map((crop, i) => /*#__PURE__*/React.createElement(Canvas, {
+    key: crop.id || i,
+    crop: crop,
+    img: imgRef.current
+  }))));
 };
 
 export { RegionSelector };
