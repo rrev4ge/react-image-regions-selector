@@ -1,0 +1,24 @@
+@use "sass:math";
+
+
+.canvasList{
+  padding: 5px;
+  background-color: #cecece;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 5px;
+  overflow: auto;
+  outline: 2px solid #aaaaaa75;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  -o-border-radius: 2px;
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}

@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { RegionSelector } from 'react-image-regions-selector';
-import 'react-image-regions-selector/dist/index.css'
+// import 'react-image-regions-selector/dist/index.css';
+import { AppLayout } from '../../layout';
 
 const HomePage = () => {
-
   const [uploadImg, setUploadImg] = useState<any>();
-
 
   const onSelectFile = (e: any) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -35,10 +33,10 @@ const HomePage = () => {
           position: 'relative',
         }}
       >
-        <RegionSelector src={uploadImg} />
+        {/* <RegionSelector src={uploadImg} /> */}
       </div>
     </div>
   );
-}
+};
 
 export default HomePage;

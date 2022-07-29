@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@testing-library/jest-dom": "link:../node_modules/@testing-library/jest-dom",
     "@testing-library/react": "link:../node_modules/@testing-library/react",
     "@testing-library/user-event": "link:../node_modules/@testing-library/user-event",
@@ -12,6 +13,7 @@
     "@types/react-dom": "link:../node_modules/@types/react-dom",
     "@types/react-router": "^5.1.7",
     "@types/react-router-dom": "^5.1.5",
+    "antd": "^4.22.2",
     "react": "link:../node_modules/react",
     "react-dom": "link:../node_modules/react-dom",
     "react-image-regions-selector": "link:..",

@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { is } from 'ramda';
-import _ from 'lodash';
 import { Canvas, MultiCrops } from './components';
-import styles from './RegionSelector.module.css';
+import styles from './RegionSelector.module.scss';
 import { useDidMountEffect } from './hooks';
 
 export interface IRegionSelectorProps {
@@ -19,7 +18,7 @@ export interface IRegionSelectorProps {
   height?: number;
 }
 
-const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
+export const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
   const {
     giveCompletedCrops = null,
     completedCrops = [],
@@ -64,37 +63,26 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
 
   const calcProportions = (crop) => {
     const { width, height } = (typeof imgRef?.current !== 'undefined' && imgRef?.current) || { width: 0, height: 0 };
-    return {
+        const proportions = {
       ...crop,
-      x: _.floor(crop.x / width, 3),
-      y: _.floor(crop.y / height, 3),
-      height: _.floor(crop.height / height, 3),
-      width: _.floor(crop.width / width, 3),
-    };
+      x: (crop.x / width).toFixed(2),
+      y: (crop.y/ height).toFixed(2),
+      height: (crop.height / height).toFixed(2),
+      width: (crop.width / width).toFixed(2),
+    }
+    return proportions;
   };
 
-  useEffect(() => {
+  useDidMountEffect(() => {
     if (didMount) {
       if (isProportions) {
-        setCrops(() => completedCrops.map((crop) => calcPosition(crop)));
-      }
-      if (!isProportions) {
-        setCrops(completedCrops);
-      }
+      setCrops(() => completedCrops.map((crop) => calcPosition(crop)));
     }
-    setDidMount(true);
-    return () => setDidMount(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!isProportions) {
+      setCrops(completedCrops);
+    }
+    }
   }, [completedCrops]);
-
-  // useDidMountEffect(() => {
-  //   if (isProportions) {
-  //     setCrops(() => completedCrops.map((crop) => calcPosition(crop)));
-  //   }
-  //   if (!isProportions) {
-  //     setCrops(completedCrops);
-  //   }
-  // }, [completedCrops]);
 
   const onLoad = useCallback(
     (img) => {
@@ -114,17 +102,17 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
 
   const onChange = useCallback((crop, index, crops) => {
     setCrops(crops);
-    // completed(crops);
+    completed(crops);
   }, []);
 
   const onDelete = useCallback((crop, index, crops) => {
     setCrops(crops);
-    // completed(crops);
+    completed(crops);
   }, []);
 
   const onRestore = useCallback((crop, index, crops) => {
     setCrops(crops);
-    // completed(crops);
+    completed(crops);
   }, []);
 
   const onComplete = useCallback((crop, index, crops) => {
@@ -169,5 +157,3 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
     </div>
   );
 };
-
-export default RegionSelector;

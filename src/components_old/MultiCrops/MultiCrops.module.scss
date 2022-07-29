@@ -1,0 +1,18 @@
+@use "sass:math";
+
+$chess-background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC");
+
+
+
+
+.multiCrops {
+  border: none;
+  box-sizing: content-box;
+  position: relative;
+  --ms-touch-action: none;
+  touch-action: none;
+  user-select: none;
+    img {
+      display: block;
+    }
+}

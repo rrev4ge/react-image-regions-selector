@@ -1,1 +1,2 @@
-export { default as RegionSelector } from './RegionSelector';
+// export { RegionSelector } from './RegionSelector';
+export { default as RegionSelector } from './components_old/RegionSelector/RegionSelector';
