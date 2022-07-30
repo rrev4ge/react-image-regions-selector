@@ -7,7 +7,14 @@ import MultiCrops from '../MultiCrops/MultiCrops';
 import { useDidMountEffect } from '../../hooks';
 
 const RegionSelectorOld = (props) => {
-  const { src, width, setCompletedCrops, completedCrops, isProportions, isShowCanvas } = props;
+  const {
+    src,
+    width,
+    setCompletedCrops,
+    completedCrops,
+    isProportions,
+    isShowCanvas,
+  } = props;
   const imgRef = useRef(null);
   const [crops, setCrops] = useState([]);
   const [canvas, setCanvas] = useState([]);
@@ -136,7 +143,11 @@ const RegionSelectorOld = (props) => {
         />
       </div>
       {isShowCanvas && (
-        <CanvasList canvas={canvas} img={imgRef.current} style={{ width, height: imgRef.current?.height || 0 }} />
+        <CanvasList
+          canvas={canvas}
+          img={imgRef.current}
+          style={{ width, height: imgRef.current?.height || 0 }}
+        />
       )}
     </div>
   );
