@@ -1,8 +1,7 @@
 .canvasItem {
   position: relative;
   display: block;
-  outline: 2px solid #ffffff80;
-  // background: #ffffff80;
+  outline: 2px solid #aaaaaa75;
   border-radius: 2px;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
@@ -16,32 +15,41 @@
 
 .canvasDownloadButton {
   position: absolute;
-  top: 2px;
-  right: 2px;
+  top: 50%;
+  right: 50%;
   color: #ffffff;
   font-size: 14px;
   border: 1px solid #ffffff80;
   border-radius: 2px;
   padding: 0 4px;
-  background: #26262675;
+  transform: translate(50%, -50%);
+  background: #26262695;
   cursor: pointer;
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
   -ms-border-radius: 2px;
   -o-border-radius: 2px;
+  -webkit-transform: translate(50%, -50%);
+  -moz-transform: translate(50%, -50%);
+  -ms-transform: translate(50%, -50%);
+  -o-transform: translate(50%, -50%);
 }
 
-.canvasNumberIcon {
+.canvasContent {
   position: absolute;
+  max-width: 97%;
   top: 2px;
   left: 2px;
-  width: 15px;
-  height: 15px;
+  padding: 0 5px;
   float: left;
-  font-size: 14px;
   text-align: center;
-  margin-left: 2px;
-  background:#26262630;
-  color: black;
+  margin: 2px;
+  background: #26262695;
+  overflow: hidden;
+  text-align: center;
   opacity: 0.8;
+  color: #ffffff;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

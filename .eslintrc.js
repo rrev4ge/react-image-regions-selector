@@ -4,10 +4,13 @@
 const { off } = require('process');
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-const a11yOff = Object.keys(require('eslint-plugin-jsx-a11y').rules).reduce((acc, rule) => {
-  acc[`jsx-a11y/${rule}`] = 'off';
-  return acc;
-}, {});
+const a11yOff = Object.keys(require('eslint-plugin-jsx-a11y').rules).reduce(
+  (acc, rule) => {
+    acc[`jsx-a11y/${rule}`] = 'off';
+    return acc;
+  },
+  {},
+);
 
 module.exports = {
   env: {
@@ -48,7 +51,11 @@ module.exports = {
     'no-extra-parens': 0,
     'prefer-const': 'error',
     'no-use-before-define': 'off',
-    'operator-linebreak': ['error', 'after', { overrides: { '?': 'before', ':': 'before' } }],
+    'operator-linebreak': [
+      'error',
+      'after',
+      { overrides: { '?': 'before', ':': 'before' } },
+    ],
     'no-console': 'off',
     'no-useless-constructor': 'off',
     'no-underscore-dangle': 'off',
@@ -83,7 +90,10 @@ module.exports = {
     ],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'off',
-    'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', 'ts', 'tsx'] }],
+    'react/jsx-filename-extension': [
+      2,
+      { extensions: ['.js', '.jsx', 'ts', 'tsx'] },
+    ],
     semi: 'error',
     'import/prefer-default-export': 'off',
     'import/extensions': [
@@ -105,6 +115,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-no-useless-fragment': 'off',
     'react/no-unused-prop-types': 'off',
+    'react/no-unused-class-component-methods': 'off',
     'class-methods-use-this': 'off',
     'react/no-array-index-key': 'off',
     'react/forbid-prop-types': 'off',

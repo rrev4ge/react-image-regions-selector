@@ -12,7 +12,7 @@ const AppLayout = ({ children, ...rest }) => {
     <Layout>
       <HeaderLayout />
       <Layout>
-        <SiderLayout collapsedActions={collapsedActions} />
+         {/*<SiderLayout collapsedActions={collapsedActions} /> */}
         <ContentLayout collapsedActions={collapsedActions}>
           {children}
         </ContentLayout>

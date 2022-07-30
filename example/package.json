@@ -18,7 +18,8 @@
     "react-dom": "link:../node_modules/react-dom",
     "react-image-regions-selector": "link:..",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "link:../node_modules/react-scripts"
+    "react-scripts": "link:../node_modules/react-scripts",
+    "typescript": "file:../node_modules/typescript"
   },
   "scripts": {
     "start": "node ../node_modules/react-scripts/bin/react-scripts.js start",
@@ -27,7 +28,10 @@
     "eject": "node ../node_modules/react-scripts/bin/react-scripts.js eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": {
     "production": [

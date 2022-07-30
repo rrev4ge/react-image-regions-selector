@@ -1,4 +1,4 @@
-import React, { ComponentProps } from 'react';
+import React from 'react';
 import { Switch } from 'antd';
 import { useTheme } from './hooks';
 
@@ -9,6 +9,9 @@ const ThemeSwitcher = (...rest): React.ReactElement => {
 
   return (
     <Switch
+      style={{
+          cursor: 'pointer',
+      }}
       checkedChildren={<div style={{ fontSize: '1.5em' }}>🌜</div>}
       unCheckedChildren={<div style={{ fontSize: '1.5em' }}>🌞</div>}
       onChange={(checked) => {

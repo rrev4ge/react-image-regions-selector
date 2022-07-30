@@ -7,6 +7,7 @@ const HeaderLayout = (): React.ReactElement => (
   <Layout.Header
     style={{
       position: 'sticky',
+      top: 0,
       zIndex: 1,
       width: '100%',
     }}
@@ -52,11 +53,7 @@ const HeaderLayout = (): React.ReactElement => (
           justifyContent: 'right',
         }}
       >
-        <ThemeSwitcher
-          style={{
-            cursor: 'pointer',
-          }}
-        />
+        <ThemeSwitcher />
       </div>
     </div>
   </Layout.Header>

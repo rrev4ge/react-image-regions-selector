@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
+import { TCoordinateType } from '../MultiCrops/Crop/CropFC';
 import styles from './Canvas.module.scss';
 
 function generateDownload(canvas, crop) {
@@ -23,20 +23,21 @@ function generateDownload(canvas, crop) {
   );
 }
 
-const useCanvas = (props, callback) => {
-  const { crop, img } = props;
-  console.log({ crop });
+const useCanvas = (
+  props: { crop: TCoordinateType; img: HTMLImageElement },
+  callback,
+) => {
+  const { crop = null, img = null } = props;
 
-  const canvasRef = useRef(null);
-  const imgRef = useRef(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
   imgRef.current = img;
 
   useEffect(() => {
     const image = imgRef.current;
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas?.getContext('2d');
     callback([canvas, ctx, image]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [crop]);
 
   return canvasRef;
@@ -81,25 +82,18 @@ const Canvas = (props) => {
         setIsHover(false);
       }}
     >
-      {isHover && <div className={styles.canvasNumberIcon}>Download</div>}
+      {isHover && <div className={styles.canvasContent}>{crop.content}</div>}
       <canvas ref={canvasRef} className={styles.canvasImg} />
       {isHover && (
-        <div className={styles.canvasDownloadButton} onClick={() => generateDownload(canvasRef.current, crop)}>
+        <div
+          className={styles.canvasDownloadButton}
+          onClick={() => generateDownload(canvasRef.current, crop)}
+        >
           Download
         </div>
       )}
     </div>
   );
-};
-
-Canvas.propTypes = {
-  crop: PropTypes.object,
-  img: PropTypes.object,
-};
-
-Canvas.defaultProps = {
-  crop: null,
-  img: null,
 };
 
 export default Canvas;

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-// import 'react-image-regions-selector/dist/index.css';
-import { AppLayout } from '../../layout';
+import { RegionSelector } from 'react-image-regions-selector';
+import 'react-image-regions-selector/dist/index.css';
+import { useWindowDimensions } from '../../hooks';
 
 const HomePage = () => {
   const [uploadImg, setUploadImg] = useState<any>();
+  const windowDimensions = useWindowDimensions();
 
   const onSelectFile = (e: any) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -33,7 +35,29 @@ const HomePage = () => {
           position: 'relative',
         }}
       >
-        {/* <RegionSelector src={uploadImg} /> */}
+        <RegionSelector
+          src={uploadImg}
+          inProportions
+          completedCrops={[
+            {
+              height: '0.25',
+              id: 'cb9011dc-a3ef-466d-aa2e-c765727b276d',
+              width: '0.33',
+              x: '0.17',
+              y: '0.14',
+              content: 'sadfgfdsgfdshgdfsgsfdgsfsdddddddddddddddddddddddddddddddddddddddddddddddd',
+            },
+          ]}
+          width={windowDimensions.width < 500 ? 280 : 400}
+          maxCrops={1}
+          cropConfig={{
+            hasDeleteButton: true,
+            hasContent: true,
+          }}
+          giveCompletedCrops={(crops) => {
+            console.log({ crops });
+          }}
+        />
       </div>
     </div>
   );

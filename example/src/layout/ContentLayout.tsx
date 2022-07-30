@@ -17,7 +17,7 @@ const ContentLayout = ({
         padding: '10px 24px',
       }}
     >
-      <Layout.Content style={{ flexGrow: 1, ...margin }}>
+      <Layout.Content style={{ flexGrow: 1 }}>
         <BackTop visibilityHeight={2} />
         {children}
       </Layout.Content>

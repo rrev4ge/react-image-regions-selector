@@ -3,7 +3,8 @@ import CONSTANTS from '../../CONSTANTS';
 import { themes } from '../models/Themes';
 
 const getTheme = (): string =>
-  JSON.parse(<string>localStorage.getItem(CONSTANTS.APP_LOCAL_STORAGE_THEME_MODE_POINT || '')) || themes[0].id;
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+  JSON.parse(<string>localStorage.getItem(CONSTANTS.APP_LOCAL_STORAGE_THEME_MODE_POINT)) || themes[0].id;
 
 const useTheme = (): [string, React.Dispatch<React.SetStateAction<string>>] => {
   const [theme, setTheme] = useState(getTheme);

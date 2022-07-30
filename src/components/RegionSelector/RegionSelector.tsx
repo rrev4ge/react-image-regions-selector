@@ -4,37 +4,20 @@ import MultiCrops from '../MultiCrops/MultiCrops';
 import CanvasList from '../Canvas/CanvasList';
 import { useDidMountEffect } from '../../hooks';
 import styles from './RegionSelector.module.scss';
-import CONSTANTS from '../../CONSTANTS';
-
-export interface IRegionSelectorProps {
-  src?: string;
-  completedCrops?: any[];
-  giveCompletedCrops?: any;
-  isProportions?: boolean;
-  isShowCanvas?: boolean;
-  cropContent?: boolean;
-  maxCrops?: number;
-  giveCanvas?: any;
-  width?: number;
-  aspectRatio?: number;
-  height?: number;
-}
+import { IRegionSelectorProps } from '../../models';
 
 const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
   const {
+    src,
     giveCompletedCrops = null,
     completedCrops = [],
-    src = CONSTANTS.NOT_FOUND_IMG,
-    isProportions = false,
-    isShowCanvas = true,
-    maxCrops = 100,
+    inProportions = false,
+    showCanvas = true,
     giveCanvas,
-    width = 600,
-    aspectRatio = 0.68,
-    height = width / aspectRatio,
+    width = 460,
   } = props;
 
-  const imgRef = useRef<HTMLImageElement>();
+  const imgRef = useRef<HTMLImageElement | null>(null);
   const [crops, setCrops] = useState<any[]>([]);
   const [canvas, setCanvas] = useState<any[]>([]);
   const [didMount, setDidMount] = useState<boolean>(false);
@@ -42,11 +25,11 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
   const completed = (crops) => {
     setCanvas(crops);
     if (giveCompletedCrops && is(Function, giveCompletedCrops)) {
-      if (isProportions) {
+      if (inProportions) {
         giveCompletedCrops &&
-          giveCompletedCrops(() => crops.map((crop) => calcProportions(crop)));
+          giveCompletedCrops(crops.map((crop) => calcProportions(crop)));
       }
-      if (!isProportions) {
+      if (!inProportions) {
         giveCompletedCrops && giveCompletedCrops(crops);
       }
     }
@@ -79,35 +62,35 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
   };
 
   useDidMountEffect(() => {
-    if (didMount) {
-      if (isProportions) {
+    if (didMount && completedCrops) {
+      if (inProportions) {
         setCrops(() => completedCrops.map((crop) => calcPosition(crop)));
       }
-      if (!isProportions) {
+      if (!inProportions) {
         setCrops(completedCrops);
       }
     }
-  }, [completedCrops]);
+  }, []);
 
   const onLoad = useCallback(
     (img) => {
       imgRef.current = img.target;
       setDidMount(true);
-      if (isProportions) {
+      if (inProportions) {
         setCrops(() => completedCrops.map((crop) => calcPosition(crop)));
         setCanvas(() => completedCrops.map((crop) => calcPosition(crop)));
       }
-      if (!isProportions) {
+      if (!inProportions) {
         setCrops(completedCrops);
         setCanvas(completedCrops);
       }
     },
-    [completedCrops, isProportions],
+    [completedCrops, inProportions],
   );
 
   const onChange = useCallback((crop, index, crops) => {
     setCrops(crops);
-    completed(crops);
+    // completed(crops);
   }, []);
 
   const onDelete = useCallback((crop, index, crops) => {
@@ -147,16 +130,18 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
           onRestore={onRestore}
           onComplete={onComplete}
           onLoad={onLoad}
-          width={width}
-          aspectRatio={aspectRatio}
+          width={imgRef.current?.width || width}
           {...props}
         />
       </div>
-      {isShowCanvas && (
+      {showCanvas && (
         <CanvasList
           canvas={canvas}
           img={imgRef.current}
-          style={{ width, height: imgRef.current?.height || 0 }}
+          style={{
+            width,
+            height: imgRef.current?.height ? imgRef.current.height + 10 : 0,
+          }}
         />
       )}
     </div>

@@ -3,12 +3,12 @@
 
 .canvasList{
   padding: 5px;
-  background-color: #cecece;
+  background-color: rgba(255, 255, 255, 0.2);
   display: flex;
   justify-content: start;
   align-items: start;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 10px;
   overflow: auto;
   outline: 2px solid #aaaaaa75;
   border-radius: 2px;

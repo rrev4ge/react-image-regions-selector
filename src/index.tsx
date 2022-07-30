@@ -1,2 +1,9 @@
-// export { RegionSelector } from './RegionSelector';
-export { default as RegionSelector } from './components_old/RegionSelector/RegionSelector';
+export { default as RegionSelector } from './components/RegionSelector/RegionSelector';
+export type {
+  TCoordinateType,
+  IMultiCropsProps,
+  IEvents,
+  ICropProps,
+  ICropConfig,
+  IRegionSelectorProps,
+} from './models';
