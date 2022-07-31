@@ -702,11 +702,14 @@ const CanvasList = props => {
   const {
     canvas,
     img,
-    style
+    config
   } = props;
   return /*#__PURE__*/React.createElement("div", {
     className: styles$3.canvasList,
-    style: style
+    style: {
+      width: (img === null || img === void 0 ? void 0 : img.width) || (config === null || config === void 0 ? void 0 : config.width),
+      height: img !== null && img !== void 0 && img.height ? img.height + 10 : 0
+    }
   }, canvas.map((crop, i) => /*#__PURE__*/React.createElement(Canvas, {
     key: crop.id || i,
     crop: crop,
@@ -728,12 +731,12 @@ const useDidMountEffect = (func, deps) => {
 var styles$4 = {"regionSelector":"_RegionSelector-module__regionSelector__1HJm4","multiCrops":"_RegionSelector-module__multiCrops__3I3KZ"};
 
 const RegionSelector = props => {
-  var _imgRef$current, _imgRef$current2;
+  var _imgRef$current;
 
   const {
     src,
     onRegionChange = null,
-    regions = [],
+    regions,
     inProportions = false,
     showCanvasList = true,
     width = 460
@@ -765,12 +768,13 @@ const RegionSelector = props => {
       width: 0,
       height: 0
     };
-    return { ...crop,
+    const position = { ...crop,
       x: parseInt((width * crop.x).toFixed(0), 10),
       y: parseInt((height * crop.y).toFixed(0), 10),
       height: parseInt((height * crop.height).toFixed(0), 10),
       width: parseInt((width * crop.width).toFixed(0), 10)
     };
+    return position;
   };
 
   const calcProportions = crop => {
@@ -782,10 +786,10 @@ const RegionSelector = props => {
       height: 0
     };
     const proportions = { ...crop,
-      x: (crop.x / width).toFixed(2),
-      y: (crop.y / height).toFixed(2),
-      height: (crop.height / height).toFixed(2),
-      width: (crop.width / width).toFixed(2)
+      x: parseFloat((crop.x / width).toFixed(3)),
+      y: parseFloat((crop.y / height).toFixed(3)),
+      height: parseFloat((crop.height / height).toFixed(3)),
+      width: parseFloat((crop.width / width).toFixed(3))
     };
     return proportions;
   };
@@ -800,17 +804,24 @@ const RegionSelector = props => {
         setCrops(regions);
       }
     }
-  }, []);
+  }, [regions]);
+  useDidMountEffect(() => {
+    if (!src) {
+      setCrops([]);
+      setCanvas([]);
+      imgRef.current = null;
+    }
+  }, [src]);
   const onLoad = useCallback(img => {
     imgRef.current = img.target;
     setDidMount(true);
 
-    if (inProportions) {
+    if (inProportions && regions) {
       setCrops(() => regions.map(crop => calcPosition(crop)));
       setCanvas(() => regions.map(crop => calcPosition(crop)));
     }
 
-    if (!inProportions) {
+    if (!inProportions && regions) {
       setCrops(regions);
       setCanvas(regions);
     }
@@ -857,9 +868,8 @@ const RegionSelector = props => {
   }, props))), showCanvasList && /*#__PURE__*/React.createElement(CanvasList, {
     canvas: canvas,
     img: imgRef.current,
-    style: {
-      width,
-      height: (_imgRef$current2 = imgRef.current) !== null && _imgRef$current2 !== void 0 && _imgRef$current2.height ? imgRef.current.height + 10 : 0
+    config: {
+      width
     }
   }));
 };

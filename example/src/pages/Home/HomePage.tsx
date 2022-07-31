@@ -3,36 +3,42 @@ import { Upload } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { RegionSelector, TCoordinateType } from 'react-image-regions-selector';
 import 'react-image-regions-selector/dist/index.css';
+import './HomePage.css';
 import { useWindowDimensions } from '../../hooks';
 
+
+const defaultRegionList = [
+  {
+    x: 0.0,
+    y: 0.0,
+    width: 0.99,
+    height: 0.11,
+    id: 'First Crop title',
+  },
+  {
+    x: 0.0,
+    y: 0.38,
+    width: 1.0,
+    height: 0.17,
+    id: 'Second Crop title',
+    content: 'Second Crop title',
+  },
+  {
+    x: 0.0,
+    y: 0.88,
+    width: 1.0,
+    height: 0.12,
+    id: 'Third Crop title',
+    content: 'Third Crop title',
+  },
+];
+
+const { Dragger } = Upload;
+
 const HomePage = () => {
-  const [uploadImg, setUploadImg] = useState<any>();
+  const [uploadImg, setUploadImg] = useState<string>('');
   const windowDimensions = useWindowDimensions();
-  const [regions, setRegions] = useState<TCoordinateType[]>([
-    {
-      x: 0.0,
-      y: 0.0,
-      width: 0.99,
-      height: 0.11,
-      id: 'First Crop title',
-    },
-    {
-      x: 0.0,
-      y: 0.38,
-      width: 1.0,
-      height: 0.17,
-      id: 'Second Crop title',
-      content: 'Second Crop title',
-    },
-    {
-      x: 0.0,
-      y: 0.88,
-      width: 1.0,
-      height: 0.12,
-      id: 'Third Crop title',
-      content: 'Third Crop title',
-    },
-  ]);
+  const [regions, setRegions] = useState<TCoordinateType[]>(defaultRegionList);
 
   useEffect(() => {
     console.log({ regions });
@@ -49,26 +55,26 @@ const HomePage = () => {
 
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        alignContent: 'space-evenly',
-        flexDirection: 'column',
-        gap: 25,
-      }}
+    className="flexPage"
     >
-      <Upload.Dragger
-        style={{
-          height: 90,
-        }}
+      <Dragger
         name="files"
         accept="image/*"
         multiple={false}
         maxCount={1}
-        onChange={({ file }) => {
+        onRemove={(file) => {
+          setRegions(defaultRegionList);
+          setUploadImg('');
+        }}
+        onChange={({ file, fileList }) => {
+          setRegions(defaultRegionList);
+          if (file?.status === 'removed') {
+            setUploadImg('');
+            return;
+          }
           const reader = new FileReader();
-          reader.onload = (_e) => setUploadImg(reader.result as string);
+          reader.onload = (_e) => setUploadImg((reader.result as string) || '');
+
           reader.readAsDataURL(file.originFileObj!);
         }}
         customRequest={({ file, onSuccess }) => {
@@ -93,7 +99,7 @@ const HomePage = () => {
             Click or drag Image to this area
           </span>
         </p>
-      </Upload.Dragger>
+      </Dragger>
       {/* <input type="file" accept="image/*" onChange={onSelectFile} /> */}
       <div
         style={{

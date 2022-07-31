@@ -6,7 +6,7 @@ export interface IConstants {
 }
 
 const CONSTANTS: IConstants = {
-  APP_TITLE: process.env.REACT_APP_TITLE || "Image Region Selector Example" || 'React App',
+  APP_TITLE: process.env.REACT_APP_TITLE || 'React App',
   APP_LOCAL_STORAGE_THEME_MODE_POINT: 'app-theme-mode',
 };
 

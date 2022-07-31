@@ -11,7 +11,7 @@ const App = () => {
         <AppLayout>
           <Switch>
             <Route
-              path="/react-image-regions-selector-example"
+              path={["/react-image-regions-selector-example", '/']}
               component={HomePage}
             />
           </Switch>

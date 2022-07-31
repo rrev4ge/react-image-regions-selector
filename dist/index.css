@@ -286,7 +286,7 @@
   -moz-border-radius: 2px;
   -ms-border-radius: 2px;
   -o-border-radius: 2px;
-  z-index: 1;
+  z-index: 0;
 }
 ._RegionSelector-module__multiCrops__3I3KZ::after {
   content: "";

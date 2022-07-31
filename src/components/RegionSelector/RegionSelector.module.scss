@@ -24,7 +24,7 @@ $chess-background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQ
   -moz-border-radius: 2px;
   -ms-border-radius: 2px;
   -o-border-radius: 2px;
-  z-index: 1;
+  z-index: 0;
 
   &::after {
     content: "";
