@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/example/node_modules
 /.pnp
 .pnp.js
 /.vscode
@@ -10,8 +11,12 @@
 # testing
 /coverage
 
+# distribution
+/dist
+
 # production
 /build
+/example/build
 
 # misc
 .DS_Store
