@@ -18,8 +18,8 @@ const ThemeSwitcher = (...rest): React.ReactElement => {
         const newTheme = checked ? 'dark' : 'light';
         setTheme(newTheme);
       }}
-      defaultChecked={theme === 'dark'}
-      {...rest}
+      defaultChecked={theme === 'dark' ? true : false}
+      // {...rest}
     />
   );
 };
