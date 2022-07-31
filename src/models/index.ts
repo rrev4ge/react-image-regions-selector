@@ -14,7 +14,7 @@ export interface IMultiCropsProps extends IEvents {
   coordinates?: TCoordinateType[];
   src?: string;
   height?: number;
-  maxCrops?: number;
+  maxRegionListLength?: number;
 }
 
 export interface IEvents {
@@ -44,7 +44,7 @@ export interface ICropConfig {
   hasNumberIcon?: boolean;
 }
 
-export interface IMultiCropConfig {
+export interface ICanvasConfig {
   hasDeleteButton?: boolean;
   hasContent?: boolean;
   hasNumberIcon?: boolean;
@@ -52,12 +52,12 @@ export interface IMultiCropConfig {
 
 export interface IRegionSelectorProps {
   src?: string;
-  completedCrops?: any[];
-  maxCrops?: number;
-  giveCompletedCrops?: any;
+  regions?: TCoordinateType[];
+  maxRegionListLength?: number;
+  onRegionChange?: (regions: TCoordinateType[]) => void;
   inProportions?: boolean;
-  showCanvas?: boolean;
-  giveCanvas?: any;
+  showCanvasList?: boolean;
+  onCanvasChange?: any;
   width?: number;
   cropConfig: ICropConfig;
 }

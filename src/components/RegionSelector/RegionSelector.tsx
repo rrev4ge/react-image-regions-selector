@@ -10,13 +10,11 @@ import CONSTANTS from '../../CONSTANTS';
 const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
   const {
     src,
-    giveCompletedCrops = null,
-    completedCrops = [],
+    onRegionChange = null,
+    regions = [],
     inProportions = false,
-    showCanvas = true,
-    giveCanvas,
+    showCanvasList = true,
     width = 460,
-    maxCrops = CONSTANTS.MAX_CROPS,
   } = props;
 
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -26,13 +24,13 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
 
   const completed = (crops) => {
     setCanvas(crops);
-    if (giveCompletedCrops && is(Function, giveCompletedCrops)) {
+    if (onRegionChange && is(Function, onRegionChange)) {
       if (inProportions) {
-        giveCompletedCrops &&
-          giveCompletedCrops(crops.map((crop) => calcProportions(crop)));
+        onRegionChange &&
+          onRegionChange(crops.map((crop) => calcProportions(crop)));
       }
       if (!inProportions) {
-        giveCompletedCrops && giveCompletedCrops(crops);
+        onRegionChange && onRegionChange(crops);
       }
     }
   };
@@ -64,12 +62,12 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
   };
 
   useDidMountEffect(() => {
-    if (didMount && completedCrops) {
+    if (didMount && regions) {
       if (inProportions) {
-        setCrops(() => completedCrops.map((crop) => calcPosition(crop)));
+        setCrops(() => regions.map((crop) => calcPosition(crop)));
       }
       if (!inProportions) {
-        setCrops(completedCrops);
+        setCrops(regions);
       }
     }
   }, []);
@@ -79,15 +77,15 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
       imgRef.current = img.target;
       setDidMount(true);
       if (inProportions) {
-        setCrops(() => completedCrops.map((crop) => calcPosition(crop)));
-        setCanvas(() => completedCrops.map((crop) => calcPosition(crop)));
+        setCrops(() => regions.map((crop) => calcPosition(crop)));
+        setCanvas(() => regions.map((crop) => calcPosition(crop)));
       }
       if (!inProportions) {
-        setCrops(completedCrops);
-        setCanvas(completedCrops);
+        setCrops(regions);
+        setCanvas(regions);
       }
     },
-    [completedCrops, inProportions],
+    [regions, inProportions],
   );
 
   const onChange = useCallback((crop, index, crops) => {
@@ -136,7 +134,7 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
           {...props}
         />
       </div>
-      {showCanvas && (
+      {showCanvasList && (
         <CanvasList
           canvas={canvas}
           img={imgRef.current}

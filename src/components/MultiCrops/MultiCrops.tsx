@@ -20,7 +20,7 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
     coordinate,
     coordinates = [],
     src = '',
-    maxCrops = CONSTANTS.MAX_CROPS,
+    maxRegionListLength = CONSTANTS.MAX_REGION_LIST_LENGTH,
     onDraw,
     onChange,
     onComplete,
@@ -96,10 +96,9 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
     document.removeEventListener('contextmenu', onContextMenu, false);
     setIsDragResize(false);
     if (
-      coordinates.length < maxCrops &&
+      coordinates.length < maxRegionListLength &&
       (e.button === 0 || e.type === 'touchstart')
     ) {
-      console.log({ length: coordinates.length });
       setIsLeftBtnTarget(true);
       if (e.target === imgRef.current || e.target === containerRef.current) {
         const { x, y } = getCursorPosition(e);
@@ -116,7 +115,7 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
 
   const handleMouseMove = (e) => {
     if (
-      coordinates.length <= maxCrops &&
+      coordinates.length <= maxRegionListLength &&
       (e.button === 0 || e.type === 'touchmove')
     ) {
       if (
