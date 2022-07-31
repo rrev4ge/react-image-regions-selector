@@ -49,7 +49,7 @@ const HomePage = () => {
             },
           ]}
           width={windowDimensions.width < 500 ? 280 : 400}
-          maxCrops={1}
+          maxCrops={2}
           cropConfig={{
             hasDeleteButton: true,
             hasContent: true,

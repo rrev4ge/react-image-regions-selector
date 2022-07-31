@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Crop from './Crop/Crop';
 import styles from './MultiCrops.module.scss';
 import { IMultiCropsProps } from '../../models';
+import CONSTANTS from '../../CONSTANTS';
 
 const isValidPoint = (point: { x?: number; y?: number } = {}): boolean => {
   const strictNumber = (number) =>
@@ -14,31 +15,12 @@ const isValidPoint = (point: { x?: number; y?: number } = {}): boolean => {
   return false;
 };
 
-// export interface IMultiCropsProps {
-//   coordinate?: TCoordinateType;
-//   coordinates?: TCoordinateType[];
-//   src?: string;
-//   cropContent?: boolean;
-//   hasDeleteButton?: boolean;
-//   hasNumberIcon?: boolean;
-//   height?: number;
-//   onDraw?: (...rest) => any | void;
-//   onChange: (...rest) => any | void;
-//   onComplete: (...rest) => any | void;
-//   onRestore: (...rest) => any | void;
-//   onDelete: (...rest) => any | void;
-//   onLoad: (...rest) => any | void;
-//   inProportions?: boolean;
-//   maxCrops?: number;
-//   aspectRatio?: number;
-// }
-
 const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
   const {
     coordinate,
     coordinates = [],
     src = '',
-    maxCrops = 5,
+    maxCrops = CONSTANTS.MAX_CROPS,
     onDraw,
     onChange,
     onComplete,
@@ -71,7 +53,7 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
     }
   };
 
-  const renderCrops = (props) => {
+  const renderCrops = (props): any => {
     const { coordinates } = props;
     const indexedMap = addIndex(map);
     return indexedMap((coor, index) => {
@@ -114,9 +96,10 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
     document.removeEventListener('contextmenu', onContextMenu, false);
     setIsDragResize(false);
     if (
-      coordinates.length <= maxCrops &&
+      coordinates.length < maxCrops &&
       (e.button === 0 || e.type === 'touchstart')
     ) {
+      console.log({ length: coordinates.length });
       setIsLeftBtnTarget(true);
       if (e.target === imgRef.current || e.target === containerRef.current) {
         const { x, y } = getCursorPosition(e);
@@ -129,35 +112,6 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
         setIsEscBtnTarget(false);
       }
     }
-  };
-
-  const outsideEvents = (e): void | boolean => {
-    if (e.button === 0) {
-      if (isEscBtnTarget === false) {
-        if (is(Function, onRestore)) {
-          onRestore(coordinate, drawingIndex, coordinates);
-        }
-        handleMouseUp();
-      }
-      if (isEscBtnTarget === true && e.target !== imgRef.current) {
-        restoreCrops();
-        setIsEscBtnTarget(false);
-      }
-      document.removeEventListener('mouseup', outsideEvents, false);
-      document.removeEventListener('keydown', outsideEvents, false);
-      document.removeEventListener('contextmenu', onContextMenu, false);
-    }
-
-    if (e.code === 'Escape') {
-      setIsEscBtnTarget(true);
-    }
-
-    if (e.button === 2) {
-      if (e.target !== imgRef.current) {
-        restoreCrops();
-      }
-    }
-    return false;
   };
 
   const handleMouseMove = (e) => {
@@ -224,6 +178,35 @@ const MultiCrops = (props: IMultiCropsProps): React.ReactElement => {
     document.removeEventListener('keydown', outsideEvents, false);
     document.removeEventListener('contextmenu', onContextMenu, false);
     setMouseLeave(false);
+  };
+
+  const outsideEvents = (e): void | boolean => {
+    if (e.button === 0) {
+      if (isEscBtnTarget === false) {
+        if (is(Function, onRestore)) {
+          onRestore(coordinate, drawingIndex, coordinates);
+        }
+        handleMouseUp();
+      }
+      if (isEscBtnTarget === true && e.target !== imgRef.current) {
+        restoreCrops();
+        setIsEscBtnTarget(false);
+      }
+      document.removeEventListener('mouseup', outsideEvents, false);
+      document.removeEventListener('keydown', outsideEvents, false);
+      document.removeEventListener('contextmenu', onContextMenu, false);
+    }
+
+    if (e.code === 'Escape') {
+      setIsEscBtnTarget(true);
+    }
+
+    if (e.button === 2) {
+      if (e.target !== imgRef.current) {
+        restoreCrops();
+      }
+    }
+    return false;
   };
 
   const onKeyDown = (e) => {

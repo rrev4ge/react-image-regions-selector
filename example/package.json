@@ -18,7 +18,7 @@
     "react-dom": "link:../node_modules/react-dom",
     "react-image-regions-selector": "link:..",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "link:../node_modules/react-scripts",
+    "react-scripts": "^5.0.1",
     "typescript": "file:../node_modules/typescript"
   },
   "scripts": {

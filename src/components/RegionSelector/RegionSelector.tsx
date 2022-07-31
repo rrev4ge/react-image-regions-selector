@@ -5,6 +5,7 @@ import CanvasList from '../Canvas/CanvasList';
 import { useDidMountEffect } from '../../hooks';
 import styles from './RegionSelector.module.scss';
 import { IRegionSelectorProps } from '../../models';
+import CONSTANTS from '../../CONSTANTS';
 
 const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
   const {
@@ -15,6 +16,7 @@ const RegionSelector = (props: IRegionSelectorProps): React.ReactElement => {
     showCanvas = true,
     giveCanvas,
     width = 460,
+    maxCrops = CONSTANTS.MAX_CROPS,
   } = props;
 
   const imgRef = useRef<HTMLImageElement | null>(null);
