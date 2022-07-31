@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_image_regions_selector_example=self.webpackChunkreact_image_regions_selector_example||[]).push([[299],{6829:function(e,r,n){n.r(r),n.d(r,{default:function(){return a}});n(6845);var t=n(864),a=function(e){var r=e.children;return(0,t.jsx)(t.Fragment,{children:r})}}}]);

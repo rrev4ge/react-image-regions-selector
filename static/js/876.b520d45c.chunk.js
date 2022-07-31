@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkreact_image_regions_selector_example=self.webpackChunkreact_image_regions_selector_example||[]).push([[876],{5876:function(e,a,s){s.r(a),a.default={}}}]);
