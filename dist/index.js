@@ -38,7 +38,7 @@ function _setPrototypeOf(o, p) {
   return _setPrototypeOf(o, p);
 }
 
-var styles = {"rmcIconContainer":"_Crop-module__rmcIconContainer__17jGb","rmcRemove":"_Crop-module__rmcRemove__2D0hp","numberIcon":"_Crop-module__numberIcon__3R7bI","cropContent":"_Crop-module__cropContent__21A1G","ordN":"_Crop-module__ordN__19ntT","ordNe":"_Crop-module__ordNe__1Zl9b","ordNw":"_Crop-module__ordNw__3C514","ordS":"_Crop-module__ordS__2tvc1","ordSe":"_Crop-module__ordSe__1sWTP","ordSw":"_Crop-module__ordSw__2HC6Y","ordE":"_Crop-module__ordE__3L_y_","ordW":"_Crop-module__ordW__K3lk6","ord-n":"_Crop-module__ord-n__36aZb","ord-e":"_Crop-module__ord-e__MMQaN","ord-s":"_Crop-module__ord-s__qAshv","ord-w":"_Crop-module__ord-w__2RsOK"};
+var styles = {"rmcIconContainer":"_17jGb","rmcRemove":"_2D0hp","numberIcon":"_3R7bI","cropContent":"_21A1G","ordN":"_19ntT","ordNe":"_1Zl9b","ordNw":"_3C514","ordS":"_2tvc1","ordSe":"_1sWTP","ordSw":"_2HC6Y","ordE":"_3L_y_","ordW":"_K3lk6","ord-n":"_36aZb","ord-e":"_MMQaN","ord-s":"_qAshv","ord-w":"_2RsOK"};
 
 var CropDeleteIcon = function CropDeleteIcon(props) {
   return /*#__PURE__*/React__default.createElement("div", _extends({
@@ -374,7 +374,7 @@ var Crop = /*#__PURE__*/function (_Component) {
   return Crop;
 }(React.Component);
 
-var styles$1 = {"multiCrops":"_MultiCrops-module__multiCrops__294bK"};
+var styles$1 = {"multiCrops":"_294bK"};
 
 var CONSTANTS = {
   MAX_REGION_LIST_LENGTH: 1000,
@@ -691,7 +691,7 @@ var MultiCrops = function MultiCrops(props) {
   }), renderCrops(props));
 };
 
-var styles$2 = {"canvasItem":"_Canvas-module__canvasItem__3qCRo","canvasImg":"_Canvas-module__canvasImg__tP7Mz","canvasDownloadButton":"_Canvas-module__canvasDownloadButton__2-Vlk","canvasContent":"_Canvas-module__canvasContent__1ooiF"};
+var styles$2 = {"canvasItem":"_3qCRo","canvasImg":"_tP7Mz","canvasDownloadButton":"_2-Vlk","canvasContent":"_1ooiF"};
 
 function generateDownload(canvas, crop) {
   if (!crop || !canvas) {
@@ -766,7 +766,7 @@ var Canvas = function Canvas(props) {
   }, "Download"));
 };
 
-var styles$3 = {"canvasList":"_CanvasList-module__canvasList__1l9a0"};
+var styles$3 = {"canvasList":"_1l9a0"};
 
 var CanvasList = function CanvasList(props) {
   var canvas = props.canvas,
@@ -798,7 +798,7 @@ var useDidMountEffect = function useDidMountEffect(func, deps) {
   }, deps);
 };
 
-var styles$4 = {"regionSelector":"_RegionSelector-module__regionSelector__1HJm4","multiCrops":"_RegionSelector-module__multiCrops__3I3KZ"};
+var styles$4 = {"regionSelector":"_1HJm4","multiCrops":"_3I3KZ"};
 
 var RegionSelector = function RegionSelector(props) {
   var _imgRef$current;
