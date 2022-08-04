@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/react-image-regions-selector/static/css/main.6ea18ff3.css",
-    "main.js": "/react-image-regions-selector/static/js/main.f72fbd22.js",
+    "main.css": "/react-image-regions-selector/static/css/main.5033c677.css",
+    "main.js": "/react-image-regions-selector/static/js/main.b0af7002.js",
     "static/css/82.e97852f4.chunk.css": "/react-image-regions-selector/static/css/82.e97852f4.chunk.css",
     "static/js/82.abc99ea4.chunk.js": "/react-image-regions-selector/static/js/82.abc99ea4.chunk.js",
     "static/js/299.72896c69.chunk.js": "/react-image-regions-selector/static/js/299.72896c69.chunk.js",
@@ -13,7 +13,7 @@
     "index.html": "/react-image-regions-selector/index.html"
   },
   "entrypoints": [
-    "static/css/main.6ea18ff3.css",
-    "static/js/main.f72fbd22.js"
+    "static/css/main.5033c677.css",
+    "static/js/main.b0af7002.js"
   ]
 }
