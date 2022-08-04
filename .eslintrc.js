@@ -89,7 +89,7 @@ module.exports = {
       },
     ],
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'off',
+    'react-hooks/exhaustive-deps': 0,
     'react/jsx-filename-extension': [
       2,
       { extensions: ['.js', '.jsx', 'ts', 'tsx'] },

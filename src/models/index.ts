@@ -59,5 +59,5 @@ export interface IRegionSelectorProps {
   showCanvasList?: boolean;
   onCanvasChange?: any;
   width?: number;
-  cropConfig: ICropConfig;
+  cropConfig?: ICropConfig;
 }

@@ -1,6 +1,9 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
-const useCanvas = (props, callback): MutableRefObject<HTMLCanvasElement | null> => {
+const useCanvas = (
+  props,
+  callback,
+): MutableRefObject<HTMLCanvasElement | null> => {
   const { crop, img } = props;
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
